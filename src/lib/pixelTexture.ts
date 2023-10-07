@@ -1,4 +1,4 @@
-import { ClampToEdgeWrapping, RepeatWrapping, Texture } from 'three'
+import { ClampToEdgeWrapping, Texture } from 'three'
 
 export class PixelTexture extends Texture {
 	constructor(image: HTMLImageElement | HTMLCanvasElement | OffscreenCanvas) {

@@ -19,7 +19,6 @@ export const pourWater = () => {
 				ecs.removeComponent(cup, 'sprite')
 				ecs.addComponent(cup, 'sprite', new Sprite(assets.sprites.CupWater))
 				ecs.addComponent(cup, 'filled', Liquid.Water)
-				console.log('ok')
 			} else {
 				kettle.sprite.rotation.z = -Math.PI * 0
 			}
