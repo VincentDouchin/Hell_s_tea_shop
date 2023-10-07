@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": [ "ESNext", "DOM", "DOM.Iterable" ],
+    "skipLibCheck": true,
+    "types": [ "vite/client" ],
+    /* Bundler mode */
+    "moduleResolution": "Node",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "experimentalDecorators": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": [ "./src/*" ],
+      "@assets/*": [ "./assets/*" ],
+    },
+  },
+
+  "include": [ "src", "assets" ]
+}
