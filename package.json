@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate_Asset_Names": "npx tsx ./scripts/generateAssetNames.ts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "0.41.0",

@@ -44,8 +44,8 @@ export class ShaderComposer {
 		this.render()
 	}
 
-	removePass(shaderPass: Constructor<ShaderPass>) {
-		const index = this.passes.findIndex(shader => shader instanceof shaderPass)
+	removePass(shaderPass: ShaderPass) {
+		const index = this.passes.indexOf(shaderPass)
 		this.passes.splice(index, 1)
 		this.targets.splice(index, 1)
 		this.render()

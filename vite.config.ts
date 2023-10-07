@@ -1,7 +1,7 @@
 import path from 'node:path'
 import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
-import watchAssets from './scritps/generateAssetNamesPlugin'
+import watchAssets from './scripts/generateAssetNamesPlugin'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
