@@ -1,5 +1,4 @@
 import { assets, ecs } from '@/global/init'
-import { Sprite } from '@/lib/sprite'
 
 export enum Liquid {
 	Water,
@@ -12,16 +11,28 @@ kettleQuery.onEntityRemoved.subscribe(({ sprite }) => {
 	sprite.rotation.z = 0
 })
 export const pourWater = () => {
-	for (const kettle of kettleQuery.entities) {
-		for (const cup of cupQuery.entities) {
+	for (const kettle of kettleQuery) {
+		for (const cup of cupQuery) {
 			if (kettle.position.x < cup.position.x + 30 && kettle.position.x > cup.position.x - 30) {
 				kettle.sprite.rotation.z = -Math.PI * 0.2
-				ecs.removeComponent(cup, 'sprite')
-				ecs.addComponent(cup, 'sprite', new Sprite(assets.sprites.CupWater))
 				ecs.addComponent(cup, 'filled', Liquid.Water)
 			} else {
 				kettle.sprite.rotation.z = -Math.PI * 0
 			}
+		}
+	}
+}
+
+const filledCupQuery = ecs.with('filled', 'sprite')
+
+export const changeCupContent = () => {
+	for (const { filled, sprite } of filledCupQuery) {
+		const texture = {
+			[Liquid.Water]: assets.sprites.CupWater,
+			[Liquid.Tea]: assets.sprites.Cup,
+		}[filled]
+		if (sprite.composer.initialTarget.texture !== texture) {
+			sprite.composer.setInitialTexture(texture)
 		}
 	}
 }

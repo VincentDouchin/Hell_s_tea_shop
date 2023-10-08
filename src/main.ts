@@ -5,8 +5,9 @@ import { addShaders, addToScene } from './global/registerComponents'
 import { initRendering, render } from './global/rendering'
 import { State } from './lib/state'
 import { spawnCounter } from './makeTea/counter'
-import { pickupItems, releaseItems, showPickupItems, updatedPickedItemsPosition } from './makeTea/pickup'
-import { pourWater } from './makeTea/pour'
+import { infuseTea, pickupItems, pickupTea, releaseItems, showPickupItems, updatedPickedItemsPosition } from './makeTea/pickup'
+import { changeCupContent, pourWater } from './makeTea/pour'
+import { openTeabox } from './makeTea/teaBox'
 import { addedOutlineShader } from './shaders/OutlineShader'
 
 addToScene()
@@ -20,7 +21,7 @@ new State()
 // ! Make Tea
 new State()
 	.onEnter(spawnCounter)
-	.onUpdate(showPickupItems, pickupItems, updatedPickedItemsPosition, releaseItems, pourWater)
+	.onUpdate(showPickupItems, pickupTea, pickupItems, releaseItems, updatedPickedItemsPosition, pourWater, openTeabox, infuseTea, changeCupContent)
 	.enable()
 
 const animate = () => {

@@ -4,7 +4,8 @@ import { renderer } from './rendering'
 import { ecs } from '@/global/init'
 
 export class Interactable {
-	hover = false
+	#hover = false
+	#wasHovered = false
 	#pressed = false
 	#wasPressed = false
 	lastTouchedBy: null | PointerInput = null
@@ -27,6 +28,23 @@ export class Interactable {
 
 	get justReleased() {
 		return this.#wasPressed === true && this.#pressed === false
+	}
+
+	set hover(state: boolean) {
+		this.#wasHovered = this.#hover
+		this.#hover = state
+	}
+
+	get hover() {
+		return this.#hover
+	}
+
+	get justEntered() {
+		return this.#wasHovered === false && this.#hover === true
+	}
+
+	get justLeft() {
+		return this.#wasHovered === true && this.#hover === false
 	}
 }
 
@@ -105,7 +123,7 @@ export const detectInteractions = () => {
 	const camera = cameraQuery.entities[0].camera
 	if (camera) {
 		// ! Update interactable position in world space
-		for (const { interactable, sprite } of worldInteractablesQuery.entities) {
+		for (const { interactable, sprite } of worldInteractablesQuery) {
 			let pos = new Vector3()
 			pos = pos.setFromMatrixPosition(sprite.matrixWorld)
 			pos.project(camera)
@@ -127,9 +145,10 @@ export const detectInteractions = () => {
 	// 	interactable.dimensions.x = bounds.width
 	// 	interactable.dimensions.y = bounds.height
 	// }
+
 	const hovered: Interactable[] = []
 	const pressed: Interactable[] = []
-	for (const { interactable } of interactableQuery.entities) {
+	for (const { interactable } of interactableQuery) {
 		interactable.lastTouchedBy = null
 		for (const pointer of PointerInput.all) {
 			const left = interactable.position.x - interactable.dimensions.x / 2

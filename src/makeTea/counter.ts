@@ -14,13 +14,14 @@ export const spawnCounter = () => {
 		position: new Vector2(150, -95),
 		parent: counter,
 		interactable: new Interactable(),
+		teaBox: true,
 	})
 	ecs.add({
 		sprite: new Sprite(assets.sprites.CupEmpty),
 		position: new Vector2(0, -95),
 		parent: counter,
 		interactable: new Interactable(),
-		cup: true,
+		cup: { touchedByInfuser: 0 },
 	})
 	ecs.add({
 		sprite: new Sprite(assets.sprites.Kettle1),
@@ -28,5 +29,12 @@ export const spawnCounter = () => {
 		interactable: new Interactable(),
 		pickable: true,
 		kettle: true,
+	})
+	ecs.add({
+		sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(2),
+		position: new Vector2(200, -95),
+		pickable: true,
+		interactable: new Interactable(),
+		infuser: true,
 	})
 }

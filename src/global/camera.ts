@@ -33,7 +33,7 @@ export const adjustScreenSize = () => {
 		if (screenSize.changed) {
 			renderer.setSize(window.innerWidth, window.innerHeight)
 
-			for (const { camera } of cameraQuery.entities) {
+			for (const { camera } of cameraQuery) {
 				camera.left = -window.innerWidth / 2
 				camera.right = window.innerWidth / 2
 				camera.bottom = -window.innerHeight / 2
@@ -42,10 +42,10 @@ export const adjustScreenSize = () => {
 		}
 
 		let zoom: null | number = null
-		for (const { sprite } of cameraBoundsQuery.entities) {
+		for (const { sprite } of cameraBoundsQuery) {
 			zoom = window.innerWidth / sprite.scaledDimensions.x
 		}
-		for (const { camera } of cameraQuery.entities) {
+		for (const { camera } of cameraQuery) {
 			if (zoom) {
 				camera.zoom = zoom
 				camera.updateProjectionMatrix()

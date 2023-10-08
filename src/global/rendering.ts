@@ -15,7 +15,7 @@ export const initRendering = () => {
 }
 const cameraQuery = ecs.with('camera')
 export const render = () => {
-	for (const { camera } of cameraQuery.entities) {
+	for (const { camera } of cameraQuery) {
 		renderer.render(scene, camera)
 	}
 }

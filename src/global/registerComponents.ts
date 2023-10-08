@@ -3,7 +3,7 @@ import { ecs } from './init'
 import { scene } from './rendering'
 
 export const addToScene = () => {
-	for (const component of ['sprite', 'camera'] as const) {
+	for (const component of ['sprite', 'camera', 'object'] as const) {
 		const query = ecs.with(component, 'position')
 		const withoutGroup = query.without('group')
 		withoutGroup.onEntityAdded.subscribe((entity) => {
