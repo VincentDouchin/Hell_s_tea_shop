@@ -1,6 +1,6 @@
 import { AssetLoader, getFileName, loadImage } from '@/lib/assetloader'
 import { PixelTexture } from '@/lib/pixelTexture'
-import { getOffscreenBuffer } from '@/utils/buffer'
+import { getOffscreenBuffer, getScreenBuffer } from '@/utils/buffer'
 import { asyncMapValues, mapKeys, mapValues } from '@/utils/mapFunctions'
 
 const spriteLoader = new AssetLoader()
@@ -15,8 +15,8 @@ const atlasLoader = new AssetLoader()
 		const atlas = mapValues(images, (img) => {
 			const res = []
 			for (let i = 0; i < img.width; i += img.height) {
-				const buffer = getOffscreenBuffer(img.height, img.height)
-				buffer.drawImage(img, img.height * i, i, img.height, img.height, 0, 0, img.height, img.height)
+				const buffer = getScreenBuffer(img.height, img.height)
+				buffer.drawImage(img, i, 0, img.height, img.height, 0, 0, img.height, img.height)
 				res.push(new PixelTexture(buffer.canvas))
 			}
 			return res

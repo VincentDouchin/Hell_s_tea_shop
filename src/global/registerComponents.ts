@@ -9,6 +9,8 @@ export const addToScene = () => {
 		const withoutGroup = query.without('group')
 		sub.push(() => withoutGroup.onEntityAdded.subscribe((entity) => {
 			const group = new Group()
+			group.position.x = entity.position.x
+			group.position.y = entity.position.y
 			group.add(entity[component])
 			ecs.addComponent(entity, 'group', group)
 			if (entity.parent?.group) {

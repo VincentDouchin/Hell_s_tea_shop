@@ -3,18 +3,10 @@ import { Sprite } from './sprite'
 import { ecs } from '@/global/init'
 
 export class TextureAltas {
-	#index = 0
+	index = 0
 	constructor(public atlas: PixelTexture[]) {}
 	get currentTexture() {
-		return this.atlas[this.#index]
-	}
-
-	set index(nb: number) {
-		this.#index = (this.#index + nb) % this.atlas.length
-	}
-
-	setIndex(nb: number) {
-		this.#index = nb
+		return this.atlas[this.index]
 	}
 }
 const atlasQuery = ecs.with('atlas', 'sprite')

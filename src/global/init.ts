@@ -32,6 +32,11 @@ export class Entity {
 	animator?: Timer
 	atlas?: TextureAltas
 	kettleButton?: boolean
+	kettleTableau?: boolean
+	buttonToClick?: boolean
+	buttonsToClick?: number
+	temperature?: number
+	temperatureGauge?: boolean
 }
 type Prettify<T> = {
   [K in keyof T]: T[K];
@@ -68,5 +73,13 @@ export const removeParent = (entity: Entity) => {
 	if (entity.parent) {
 		entity.parent.children = entity.parent.children?.filter(c => c !== entity)
 		ecs.removeComponent(entity, 'parent')
+	}
+}
+export const despawnOfType = (c: Component) => {
+	const query = ecs.with(c)
+	return () => {
+		for (const entity of query) {
+			ecs.remove(entity)
+		}
 	}
 }

@@ -9,7 +9,7 @@ import { State } from './lib/state'
 import { SystemSet } from './lib/systemset'
 import { time } from './lib/time'
 import { spawnCounter } from './makeTea/counter'
-import { clickOnKettleButton, kettleGame } from './makeTea/kettle'
+import { clickOnKettleButton, kettleGame, setTemperature } from './makeTea/kettle'
 import { changeInfuserSprite, infuseTea, pickupItems, pickupTea, pikupTeaWithInfuser, releaseItems, showPickupItems, updatedPickedItemsPosition } from './makeTea/pickup'
 import { changeCupContent, pourWater, tipKettle } from './makeTea/pour'
 import { closeTeaBox, openTeabox } from './makeTea/teaBox'
@@ -27,7 +27,7 @@ new State()
 new State()
 	.addSubscribers(changeInfuserSprite, pikupTeaWithInfuser, tipKettle)
 	.onEnter(spawnCounter)
-	.onUpdate(SystemSet(showPickupItems, pickupItems, releaseItems).runIf(() => !kettleGame.active), pickupTea, updatedPickedItemsPosition, pourWater, openTeabox, closeTeaBox, infuseTea, changeCupContent, clickOnKettleButton)
+	.onUpdate(clickOnKettleButton, SystemSet(pickupItems).runIf(() => !kettleGame.active), releaseItems, showPickupItems, pickupTea, updatedPickedItemsPosition, pourWater, openTeabox, closeTeaBox, infuseTea, changeCupContent, setTemperature)
 	.enable()
 
 const animate = (now: number) => {
