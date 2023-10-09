@@ -13,7 +13,7 @@ export const spawnCamera = () => {
 const cameraBoundsQuery = ecs.with('cameraBounds', 'sprite', 'position')
 export const cameraQuery = ecs.with('camera')
 export const initializeCameraBounds = () => {
-	cameraBoundsQuery.onEntityAdded.subscribe(({ cameraBounds, position, sprite }) => {
+	return cameraBoundsQuery.onEntityAdded.subscribe(({ cameraBounds, position, sprite }) => {
 		cameraBounds.min.x ??= position.x - sprite.scaledDimensions.x
 		cameraBounds.max.x ??= position.x + sprite.scaledDimensions.x
 		cameraBounds.min.y ??= position.y - sprite.scaledDimensions.y

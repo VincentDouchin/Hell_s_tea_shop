@@ -2,6 +2,8 @@ export const entries = <T extends Record<string, any>>(obj: T) => Object.entries
 
 export const objectKeys = <T extends Record<string, any>>(obj: T) => Object.keys(obj) as (keyof T)[]
 
+export const objectValues = <T extends Record<string, any>>(obj: T) => Object.values(obj) as (T[keyof T])[]
+
 export const asyncMapValues = async< T extends Record<string, any>, F extends (arg: T[keyof T], key: keyof T) => any>(obj: T, fn: F) => {
 	const res = {} as Record<keyof T, Awaited<ReturnType<F>>>
 	for (const [key, val] of entries(obj)) {

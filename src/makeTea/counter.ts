@@ -1,4 +1,5 @@
 import { Box2, Vector2 } from 'three'
+import { kettle } from './kettle'
 import { assets, ecs } from '@/global/init'
 import { Sprite } from '@/lib/sprite'
 import { Interactable } from '@/global/interactions'
@@ -23,18 +24,5 @@ export const spawnCounter = () => {
 		interactable: new Interactable(),
 		cup: { touchedByInfuser: 0 },
 	})
-	ecs.add({
-		sprite: new Sprite(assets.sprites.Kettle1),
-		position: new Vector2(-200, -70),
-		interactable: new Interactable(),
-		pickable: true,
-		kettle: true,
-	})
-	ecs.add({
-		sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(2),
-		position: new Vector2(200, -95),
-		pickable: true,
-		interactable: new Interactable(),
-		infuser: true,
-	})
+	kettle(counter)
 }

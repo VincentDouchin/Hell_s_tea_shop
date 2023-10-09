@@ -65,6 +65,14 @@ export class Sprite extends Mesh<PlaneGeometry, MeshBasicMaterial> {
 		return this
 	}
 
+	set texture(text: PixelTexture) {
+		this.composer.setInitialTexture(text)
+	}
+
+	get texture() {
+		return this.composer.initialTarget.texture
+	}
+
 	static fromBuffer(buffer: OffscreenCanvasRenderingContext2D) {
 		return new Sprite(new PixelTexture(buffer.canvas))
 	}

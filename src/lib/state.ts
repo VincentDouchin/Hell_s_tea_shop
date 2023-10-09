@@ -6,11 +6,22 @@ export class State {
 		}
 	}
 
+	get active() {
+		return State.#states.has(this)
+	}
+
 	#enterSystems = new Array<() => void>()
 	#updateSystems = new Array<() => void>()
 	#exitSystems = new Array<() => void>()
+	#subscribers = new Array<() => () => void>()
+	#unsubscribers = new Array<() => void>()
 	onEnter(...systems: Array<() => void>) {
 		this.#enterSystems.push(...systems)
+		return this
+	}
+
+	addSubscribers(...subscribers: Array<() => () => void>) {
+		this.#subscribers.push(...subscribers)
 		return this
 	}
 
@@ -30,25 +41,22 @@ export class State {
 		}
 	}
 
-	#enter() {
+	enable() {
+		this.#unsubscribers.push(...this.#subscribers.map(sub => sub()))
 		for (const system of this.#enterSystems) {
 			system()
 		}
-	}
-
-	#exit() {
-		for (const system of this.#exitSystems) {
-			system()
-		}
-	}
-
-	enable() {
-		this.#enter()
 		State.#states.add(this)
 	}
 
 	disable() {
-		this.#exit()
+		for (const unsubscriber of this.#unsubscribers) {
+			unsubscriber()
+		}
+		this.#unsubscribers = []
+		for (const system of this.#exitSystems) {
+			system()
+		}
 		State.#states.delete(this)
 	}
 }

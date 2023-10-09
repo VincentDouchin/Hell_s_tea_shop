@@ -5,19 +5,19 @@ export enum Liquid {
 	Tea,
 }
 
-const kettleQuery = ecs.with('kettle', 'picked', 'position', 'sprite')
+const kettleQuery = ecs.with('kettle', 'picked', 'position', 'sprite', 'group')
 const cupQuery = ecs.with('cup', 'position', 'sprite').without('filled')
-kettleQuery.onEntityRemoved.subscribe(({ sprite }) => {
-	sprite.rotation.z = 0
+export const tipKettle = () => kettleQuery.onEntityRemoved.subscribe(({ group }) => {
+	group.rotation.z = 0
 })
 export const pourWater = () => {
 	for (const kettle of kettleQuery) {
 		for (const cup of cupQuery) {
 			if (kettle.position.x < cup.position.x + 30 && kettle.position.x > cup.position.x - 30) {
-				kettle.sprite.rotation.z = -Math.PI * 0.2
+				kettle.group.rotation.z = -Math.PI * 0.2
 				ecs.addComponent(cup, 'filled', Liquid.Water)
 			} else {
-				kettle.sprite.rotation.z = -Math.PI * 0
+				kettle.group.rotation.z = -Math.PI * 0
 			}
 		}
 	}
