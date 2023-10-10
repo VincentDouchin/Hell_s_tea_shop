@@ -7,6 +7,7 @@ import { TextureAltas } from '@/lib/atlas'
 import { Sprite } from '@/lib/sprite'
 import { State } from '@/lib/state'
 import { UIElement } from '@/UI/UiElement'
+import { Timer, time } from '@/lib/time'
 
 export const kettle = (parent: Entity) => {
 	const kettle = ecs.add({
@@ -17,7 +18,7 @@ export const kettle = (parent: Entity) => {
 		pickable: new Pickable(assets.ui.KettleCursor),
 		kettle: true,
 		parent,
-		temperature: 0,
+		temperature: { temperature: 0, timer: new Timer(5000) },
 	})
 	const gauge = ecs.add({
 		parent: kettle,
@@ -44,6 +45,15 @@ const kettleQuery = ecs.with('kettle', 'temperature')
 const kettleButtonQuery = ecs.with('kettleButton', 'interactable')
 const kettleTableauQuery = ecs.with('kettleTableau', 'buttonsToClick')
 const buttonsToClickQuery = ecs.with('buttonToClick', 'sprite', 'atlas', 'interactable')
+
+export const reduceTemperature = () => {
+	for (const { temperature } of kettleQuery) {
+		temperature.timer.tick(time.delta)
+		if (temperature.timer.justFinished) {
+			temperature.temperature = Math.max(temperature.temperature - 1, 0)
+		}
+	}
+}
 
 const spawnKettleButtons = () => {
 	for (const kettleButton of kettleButtonQuery) {
@@ -84,7 +94,7 @@ export const setTemperature = () => {
 	for (const kettle of kettleQuery) {
 		for (const { sprite, parent } of temperatureGaugeQuery) {
 			if (parent === kettle) {
-				sprite.rotation.z = -Math.PI * 2 * kettle.temperature / 100
+				sprite.rotation.z = -Math.PI * 2 * kettle.temperature.temperature / 100
 			}
 		}
 	}
@@ -93,7 +103,7 @@ const resetTableau = () => {
 	for (const entity of kettleTableauQuery) {
 		if (entity.buttonsToClick === 0) {
 			for (const kettle of kettleQuery) {
-				kettle.temperature = Math.min(kettle.temperature + 10, 100)
+				kettle.temperature.temperature = Math.min(kettle.temperature.temperature + 10, 100)
 			}
 			entity.buttonsToClick = 3
 		}
