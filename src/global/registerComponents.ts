@@ -4,7 +4,7 @@ import { scene } from './rendering'
 
 export const addToScene = () => {
 	const sub = new Array<() => () => void>()
-	for (const component of ['sprite', 'camera'] as const) {
+	for (const component of ['sprite', 'camera', 'cssObject'] as const) {
 		const query = ecs.with(component, 'position')
 		const withoutGroup = query.without('group')
 		sub.push(() => withoutGroup.onEntityAdded.subscribe((entity) => {
@@ -32,7 +32,7 @@ export const addToScene = () => {
 
 export const addShaders = () => {
 	const sub = new Array<() => () => void>()
-	for (const shader of ['outlineShader'] as const) {
+	for (const shader of ['outlineShader', 'colorShader'] as const) {
 		const query = ecs.with(shader, 'sprite')
 		sub.push(() => query.onEntityAdded.subscribe((entity) => {
 			entity.sprite.composer.addPass(entity[shader])

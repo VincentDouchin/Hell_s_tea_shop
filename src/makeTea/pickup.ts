@@ -1,30 +1,28 @@
 import { Liquid } from './pour'
-import { cameraQuery } from '@/global/camera'
-import { assets, ecs } from '@/global/init'
-import { Sprite } from '@/lib/sprite'
+import { ecs } from '@/global/init'
+import { ColorShader } from '@/shaders/ColorShader'
 import { OutlineShader } from '@/shaders/OutlineShader'
+import { sleep } from '@/utils/sleep'
+
+export class Pickable {
+	enabled = false
+	constructor(public cursor: HTMLCanvasElement) {
+	}
+
+	enable() {
+		this.enabled = true
+		document.body.style.cursor = `url(${this.cursor.toDataURL()}), auto`
+	}
+
+	disable() {
+		this.enabled = false
+		document.body.style.cursor = 'auto'
+	}
+}
 
 const infuserPickedUpQuery = ecs.with('infuser', 'picked')
-export const changeInfuserSprite = () => {
-	return infuserPickedUpQuery.onEntityAdded.subscribe((entity) => {
-		if (!entity.infuserFilled) {
-			ecs.removeComponent(entity, 'sprite')
-			ecs.addComponent(entity, 'sprite', new Sprite(assets.sprites.InfuserOpened).setRenderOrder(2))
-		} else if (entity.sprite) {
-			entity.sprite.rotation.z = Math.PI
-		}
-	})
-}
 
-export const pikupTeaWithInfuser = () => {
-	return infuserPickedUpQuery.onEntityRemoved.subscribe((entity) => {
-		ecs.removeComponent(entity, 'sprite')
-		const sprite = entity.infuserFilled ? assets.sprites.InfuserFull : assets.sprites.InfuserBox
-		ecs.addComponent(entity, 'sprite', new Sprite(sprite).setRenderOrder(2))
-	})
-}
-
-const interactableQuery = ecs.with('interactable', 'sprite')
+const interactableQuery = ecs.with('interactable', 'sprite', 'showInteractable')
 export const showPickupItems = () => {
 	for (const entity of interactableQuery) {
 		const { interactable, outlineShader } = entity
@@ -39,35 +37,35 @@ export const showPickupItems = () => {
 
 const pickableQuery = ecs.with('pickable', 'interactable', 'position')
 const pickedUpQuery = pickableQuery.with('picked')
+export const showPickedItems = () => {
+	for (const entity of pickableQuery) {
+		const { pickable, colorShader } = entity
+		if (pickable.enabled && !colorShader) {
+			ecs.addComponent(entity, 'colorShader', new ColorShader([1, 1, 1, 0.5]))
+		}
+		if (!pickable.enabled && colorShader) {
+			ecs.removeComponent(entity, 'colorShader')
+		}
+	}
+}
 
 export const pickupItems = () => {
 	if (pickedUpQuery.size === 0) {
 		for (const entity of pickableQuery) {
-			const { interactable, position } = entity
-			if (interactable.justPressed && interactable.lastTouchedBy) {
-				ecs.addComponent(entity, 'picked', { initialPosition: position.clone(), input: interactable.lastTouchedBy })
-				document.documentElement.style.cursor = 'none'
+			const { interactable, pickable } = entity
+			if (interactable.justPressed) {
+				sleep(100).then(() => ecs.addComponent(entity, 'picked', true))
+				pickable.enable()
 			}
 		}
 	}
 }
+
 export const releaseItems = () => {
 	for (const entity of pickedUpQuery) {
-		if (!entity.picked?.input?.pressed) {
-			entity.position.x = entity.picked.initialPosition.x
-			entity.position.y = entity.picked.initialPosition.y
+		if (entity.interactable.justPressed) {
+			entity.pickable.disable()
 			ecs.removeComponent(entity, 'picked')
-			document.documentElement.style.cursor = 'auto'
-		}
-	}
-}
-const pickedQuery = ecs.with('picked', 'position')
-export const updatedPickedItemsPosition = () => {
-	const camera = cameraQuery.entities[0].camera
-	if (camera) {
-		for (const { picked, position } of pickedQuery) {
-			position.x = picked.input.position.x * camera.right / camera.zoom
-			position.y = picked.input.position.y * camera.top / camera.zoom
 		}
 	}
 }
@@ -86,10 +84,10 @@ export const pickupTea = () => {
 const infuserFullPickedUpQuery = infuserPickedUpQuery.with('infuserFilled')
 const cupQuery = ecs.with('cup', 'interactable', 'filled')
 export const infuseTea = () => {
-	for (const _ of infuserFullPickedUpQuery) {
+	if (infuserFullPickedUpQuery.size) {
 		for (const cupEntity of cupQuery) {
 			const { cup, interactable, filled } = cupEntity
-			if (interactable.justEntered && filled === Liquid.Water) {
+			if (interactable.justPressed && filled === Liquid.Water) {
 				cup.touchedByInfuser += 1
 				if (cup.touchedByInfuser === 3) {
 					ecs.removeComponent(cupEntity, 'filled')

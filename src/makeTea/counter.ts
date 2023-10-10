@@ -15,6 +15,7 @@ export const spawnCounter = () => {
 		position: new Vector2(150, -95),
 		parent: counter,
 		interactable: new Interactable(),
+		showInteractable: true,
 		teaBox: true,
 	})
 	ecs.add({
@@ -22,6 +23,7 @@ export const spawnCounter = () => {
 		position: new Vector2(0, -95),
 		parent: counter,
 		interactable: new Interactable(),
+		showInteractable: true,
 		cup: { touchedByInfuser: 0 },
 	})
 	kettle(counter)

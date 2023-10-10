@@ -1,6 +1,6 @@
 import { OrthographicCamera, Vector2 } from 'three'
 import { ecs } from './init'
-import { renderer } from './rendering'
+import { cssRenderer, renderer } from './rendering'
 
 export const spawnCamera = () => {
 	const width = window.innerWidth
@@ -31,8 +31,9 @@ export const adjustScreenSize = () => {
 
 	return () => {
 		if (screenSize.changed) {
-			renderer.setSize(window.innerWidth, window.innerHeight)
-
+			for (const anyRenderer of [renderer, cssRenderer]) {
+				anyRenderer.setSize(window.innerWidth, window.innerHeight)
+			}
 			for (const { camera } of cameraQuery) {
 				camera.left = -window.innerWidth / 2
 				camera.right = window.innerWidth / 2

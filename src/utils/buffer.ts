@@ -13,7 +13,7 @@ export const getScreenBuffer = (width: number, height: number) => {
 	return ctx
 }
 
-export const toCanvas = (offscreen: OffscreenCanvas) => {
+export const toCanvas = (offscreen: OffscreenCanvas | HTMLImageElement) => {
 	const canvas = document.createElement('canvas')
 	canvas.width = offscreen.width
 	canvas.height = offscreen.height

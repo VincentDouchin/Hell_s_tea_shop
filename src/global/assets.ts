@@ -1,6 +1,6 @@
 import { AssetLoader, getFileName, loadImage } from '@/lib/assetloader'
 import { PixelTexture } from '@/lib/pixelTexture'
-import { getOffscreenBuffer } from '@/utils/buffer'
+import { getOffscreenBuffer, toCanvas } from '@/utils/buffer'
 import { asyncMapValues, mapKeys, mapValues } from '@/utils/mapFunctions'
 
 const spriteLoader = new AssetLoader()
@@ -23,10 +23,18 @@ const atlasLoader = new AssetLoader()
 		})
 		return mapKeys(atlas, getFileName)
 	})
+
+const uiLoader = new AssetLoader()
+	.pipe(async (glob) => {
+		const images = await asyncMapValues(glob, m => loadImage(m.default))
+		const canvas = mapValues(images, toCanvas)
+		return mapKeys(canvas, getFileName)
+	})
 export const loadAssets = async () => {
 	return {
 		sprites: await spriteLoader.loadRecord<sprites>(import.meta.glob('@assets/sprites/*.png', { eager: true })),
 		tea: await spriteLoader.loadRecord<tea>(import.meta.glob('@assets/tea/*.png', { eager: true })),
 		atlas: await atlasLoader.loadRecord<atlas>(import.meta.glob('@assets/atlas/*.png', { eager: true })),
+		ui: await uiLoader.loadRecord<ui>(import.meta.glob('@assets/ui/*.png', { eager: true })),
 	}
 }

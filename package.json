@@ -14,6 +14,7 @@
     "@types/three": "^0.156.0",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
+    "csstype": "^3.1.2",
     "eslint": "^8.51.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"

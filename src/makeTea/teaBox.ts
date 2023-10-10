@@ -1,12 +1,13 @@
 import { Vector2 } from 'three'
-import { assets, ecs, removeParent } from '@/global/init'
+import { Pickable } from './pickup'
+import { assets, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
 import { objectValues } from '@/utils/mapFunctions'
 
 const teaBoxOpenedQuery = ecs.with('teaBoxOpened', 'interactable')
 const teaBoxQuery = ecs.with('teaBox', 'interactable')
-const infuserQuery = ecs.with('infuser')
+const infuserQuery = ecs.with('sprite', 'infuser')
 const teaCoordinates = [
 	[-96, 47],
 	[-32, 47],
@@ -35,38 +36,40 @@ export const openTeabox = () => {
 						parent: box,
 						sprite: new Sprite(teas[i]).setScale(2),
 						interactable: new Interactable(),
+						showInteractable: true,
 						position: new Vector2(coords[0], coords[1]),
 						tea: true,
 					})
 				}
 				if (!infuserQuery.size) {
 					ecs.add({
-						parent: box,
 						sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(2),
 						position: new Vector2(95, -30),
-						pickable: true,
+						pickable: new Pickable(assets.ui.InfuserCursor),
 						interactable: new Interactable(),
+						showInteractable: true,
 						infuser: true,
 					})
+				} else {
+					for (const { sprite } of infuserQuery) {
+						sprite.setOpacity(1)
+					}
 				}
 			} else {
 				for (const entity of teaBoxOpenedQuery) {
 					ecs.remove(entity)
+				}
+				for (const { sprite } of infuserQuery) {
+					sprite.setOpacity(0)
 				}
 			}
 		}
 	}
 }
 
-const infuserPickedUpQuery = infuserQuery.with('picked')
-
-export const closeTeaBox = () => {
-	for (const infuser of infuserPickedUpQuery) {
-		for (const teabox of teaBoxOpenedQuery) {
-			if (!teabox.interactable.hover) {
-				removeParent(infuser)
-				ecs.remove(teabox)
-			}
-		}
+const filledInfuserQuery = ecs.with('infuserFilled', 'sprite')
+export const changeInfuserSprite = () => {
+	for (const { sprite } of filledInfuserQuery) {
+		sprite.texture = assets.sprites.InfuserFull
 	}
 }

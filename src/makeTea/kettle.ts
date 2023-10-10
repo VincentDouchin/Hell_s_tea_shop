@@ -1,41 +1,53 @@
 import { Vector2 } from 'three'
+import { Pickable } from './pickup'
 import type { Entity } from '@/global/init'
 import { assets, despawnOfType, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
-import { Sprite } from '@/lib/sprite'
 import { TextureAltas } from '@/lib/atlas'
+import { Sprite } from '@/lib/sprite'
 import { State } from '@/lib/state'
+import { UIElement } from '@/UI/UiElement'
 
 export const kettle = (parent: Entity) => {
 	const kettle = ecs.add({
 		sprite: new Sprite(assets.sprites.Kettle1),
 		position: new Vector2(-200, -70),
 		interactable: new Interactable(),
-		pickable: true,
+		showInteractable: true,
+		pickable: new Pickable(assets.ui.KettleCursor),
 		kettle: true,
 		parent,
 		temperature: 0,
 	})
-	ecs.add({
+	const gauge = ecs.add({
 		parent: kettle,
-		atlas: new TextureAltas(assets.atlas.kettleTemperatureGauge),
+		sprite: new Sprite(assets.sprites.kettleTemperatureGauge),
 		position: new Vector2(-6, -22),
+		interactable: new Interactable(),
 		temperatureGauge: true,
+	})
+	ecs.add({
+		...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),
+		tooltip: true,
+		parent: gauge,
 	})
 	ecs.add({
 		parent: kettle,
 		sprite: new Sprite(assets.sprites.kettleButton),
 		position: new Vector2(10.5, -21.5),
 		interactable: new Interactable(),
+		showInteractable: true,
 		kettleButton: true,
 	})
 }
 const kettleQuery = ecs.with('kettle', 'temperature')
 const kettleButtonQuery = ecs.with('kettleButton', 'interactable')
-const kettleTableau = ecs.with('kettleTableau', 'buttonsToClick')
+const kettleTableauQuery = ecs.with('kettleTableau', 'buttonsToClick')
+const buttonsToClickQuery = ecs.with('buttonToClick', 'sprite', 'atlas', 'interactable')
+
 const spawnKettleButtons = () => {
 	for (const kettleButton of kettleButtonQuery) {
-		if (!kettleTableau.size) {
+		if (!kettleTableauQuery.size) {
 			const tableau = ecs.add({
 				sprite: new Sprite(assets.sprites.Tableu),
 				position: new Vector2(50, 0),
@@ -44,36 +56,50 @@ const spawnKettleButtons = () => {
 				buttonsToClick: 3,
 
 			})
+			ecs.add({
+				parent: tableau,
+				sprite: new Sprite(assets.sprites.close),
+				position: new Vector2(23, 38),
+				interactable: new Interactable(),
+				showInteractable: true,
+				closeTableau: true,
+			})
 			for (const x of [-20, 0, 20]) {
-				for (const y of [-25, 0, 25]) {
+				for (const y of [-30, -5, 20]) {
 					ecs.add({
 						atlas: new TextureAltas(assets.atlas.BlueButton),
 						position: new Vector2(x, y),
 						parent: tableau,
 						buttonToClick: false,
 						interactable: new Interactable(),
+						showInteractable: true,
 					})
 				}
 			}
 		}
 	}
 }
-const temperatureGaugeQuery = ecs.with('atlas', 'temperatureGauge', 'parent')
+const temperatureGaugeQuery = ecs.with('sprite', 'temperatureGauge', 'parent')
 export const setTemperature = () => {
 	for (const kettle of kettleQuery) {
-		for (const { atlas, parent } of temperatureGaugeQuery) {
+		for (const { sprite, parent } of temperatureGaugeQuery) {
 			if (parent === kettle) {
-				atlas.index = kettle.temperature
+				sprite.rotation.z = -Math.PI * 2 * kettle.temperature / 100
 			}
 		}
 	}
 }
-const increaseTemperature = () => {
-	for (const kettle of kettleQuery) {
-		kettle.temperature = Math.min(kettle.temperature + 1, 7)
+const resetTableau = () => {
+	for (const entity of kettleTableauQuery) {
+		if (entity.buttonsToClick === 0) {
+			for (const kettle of kettleQuery) {
+				kettle.temperature = Math.min(kettle.temperature + 10, 100)
+			}
+			entity.buttonsToClick = 3
+		}
 	}
 }
-const buttonsToClickQuery = ecs.with('buttonToClick', 'sprite', 'atlas', 'interactable')
+
 const setButtonToClick = () => {
 	if (buttonsToClickQuery.entities.every(x => !x.buttonToClick)) {
 		buttonsToClickQuery.entities[Math.floor(Math.random() * buttonsToClickQuery.size)].buttonToClick = true
@@ -83,7 +109,7 @@ const clickOnButton = () => {
 	for (const entity of buttonsToClickQuery) {
 		if (entity.interactable.justPressed && entity.buttonToClick) {
 			entity.buttonToClick = false
-			for (const tableau of kettleTableau) {
+			for (const tableau of kettleTableauQuery) {
 				tableau.buttonsToClick -= 1
 			}
 		}
@@ -95,9 +121,10 @@ const changeButtonToClickSprite = () => {
 		atlas.atlas = buttonToClick ? assets.atlas.RedButton : assets.atlas.BlueButton
 	}
 }
+const closeKettleTableauQuery = ecs.with('interactable', 'closeTableau')
 const finishGame = () => {
-	for (const { buttonsToClick } of kettleTableau) {
-		if (buttonsToClick === 0) {
+	for (const { interactable } of closeKettleTableauQuery) {
+		if (interactable.justPressed) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			kettleGame.disable()
 		}
@@ -106,8 +133,8 @@ const finishGame = () => {
 
 export const kettleGame = new State()
 	.onEnter(spawnKettleButtons)
-	.onUpdate(setButtonToClick, changeButtonToClickSprite, clickOnButton, finishGame)
-	.onExit(despawnOfType('kettleTableau'), increaseTemperature)
+	.onUpdate(setButtonToClick, changeButtonToClickSprite, clickOnButton, finishGame, resetTableau)
+	.onExit(despawnOfType('kettleTableau'))
 
 export const clickOnKettleButton = () => {
 	for (const { interactable } of kettleButtonQuery) {

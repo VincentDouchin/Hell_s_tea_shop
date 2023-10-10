@@ -1,15 +1,26 @@
 import { World } from 'miniplex'
-import type { Box2, Group, Object3D, OrthographicCamera, Vector2 } from 'three'
+import type { Box2, Group, OrthographicCamera, Vector2 } from 'three'
+import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
-import type { Interactable, PointerInput } from './interactions'
-import type { OutlineShader } from '@/shaders/OutlineShader'
-import type { Sprite } from '@/lib/sprite'
-import type { Liquid } from '@/makeTea/pour'
-import type { Timer } from '@/lib/time'
+import type { Interactable } from './interactions'
+import type { UIElement } from '@/UI/UiElement'
 import type { TextureAltas } from '@/lib/atlas'
+import type { Sprite } from '@/lib/sprite'
+import type { Timer } from '@/lib/time'
+import type { Pickable } from '@/makeTea/pickup'
+import type { Liquid } from '@/makeTea/pour'
+import type { OutlineShader } from '@/shaders/OutlineShader'
+import type { ColorShader } from '@/shaders/ColorShader'
 
 export class Entity {
+	// ! Sprites
 	sprite?: Sprite
+	animator?: Timer
+	atlas?: TextureAltas
+	// ! Shaders
+	outlineShader?: OutlineShader
+	colorShader?: ColorShader
+	// ! Camera
 	camera?: OrthographicCamera
 	position?: Vector2
 	cameraBounds?: Box2
@@ -17,9 +28,10 @@ export class Entity {
 	parent?: Entity
 	children?: Entity[]
 	interactable?: Interactable
-	outlineShader?: OutlineShader
-	pickable?: boolean
-	picked?: { input: PointerInput; initialPosition: Vector2 }
+	showInteractable?: boolean
+
+	pickable?: Pickable
+	picked?: boolean
 	kettle?: boolean
 	cup?: { touchedByInfuser: number }
 	filled?: Liquid
@@ -27,16 +39,19 @@ export class Entity {
 	teaBoxOpened?: boolean
 	infuser?: boolean
 	infuserFilled?: boolean
-	object?: Object3D
 	tea?: boolean
-	animator?: Timer
-	atlas?: TextureAltas
+	// ! Kettle
 	kettleButton?: boolean
 	kettleTableau?: boolean
 	buttonToClick?: boolean
 	buttonsToClick?: number
 	temperature?: number
 	temperatureGauge?: boolean
+	closeTableau?: boolean
+	// ! UI
+	cssObject?: CSS2DObject
+	uiElement?: UIElement
+	tooltip?: boolean
 }
 type Prettify<T> = {
   [K in keyof T]: T[K];
