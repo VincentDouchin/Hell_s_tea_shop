@@ -10,6 +10,9 @@ export default defineConfig(() => {
 		plugins: [watchAssets(), VitePWA({
 			registerType: 'autoUpdate',
 			manifest: {
+				start_url: 'index.html?fullscreen=true',
+				display: 'fullscreen',
+				orientation: 'landscape',
 				name: 'Hell\'s Tea Shop',
 				short_name: 'Hell\'s Tea Shop',
 				description: 'Hell\'s Tea Shop',
