@@ -1,5 +1,5 @@
 import { showTooltip } from './UI/tooltip'
-import { adjustScreenSize, initializeCameraBounds, spawnCamera } from './global/camera'
+import { adjustScreenSize, initializeCameraBounds, moveCamera, setCameraZoom, spawnCamera } from './global/camera'
 import { addChildren, despanwChildren } from './global/init'
 import { detectInteractions, updateMousePosition } from './global/interactions'
 import { updatePosition } from './global/position'
@@ -27,8 +27,8 @@ new State()
 // ! Make Tea
 new State()
 	.addSubscribers()
-	.onEnter(spawnCounter)
-	.onUpdate(clickOnKettleButton, showPickupItems, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, showPickedItems, SystemSet(pickupItems).runIf(() => !kettleGame.active), releaseItems, changeInfuserSprite, reduceTemperature)
+	.onEnter(spawnCounter, setCameraZoom(3))
+	.onUpdate(clickOnKettleButton, showPickupItems, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, showPickedItems, SystemSet(pickupItems).runIf(() => !kettleGame.active), releaseItems, changeInfuserSprite, reduceTemperature, moveCamera)
 	.enable()
 
 const animate = (now: number) => {

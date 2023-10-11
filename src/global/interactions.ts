@@ -57,6 +57,7 @@ export class PointerInput {
 	position = new Vector2()
 	screenPosition = new Vector2()
 	pressed = false
+	rightPressed = false
 	constructor(private down: string, private up: string) {
 	}
 
@@ -64,13 +65,15 @@ export class PointerInput {
 		const bounds = element.getBoundingClientRect()
 		this.screenPosition.x = e.clientX
 		this.screenPosition.y = e.clientY
-		const x = ((e.clientX - bounds.left) / element.clientWidth) * 2 - 1
-		const y = 1 - ((e.clientY - bounds.top) / element.clientHeight) * 2
-		this.position = new Vector2(x, y)
+		this.position.x = ((e.clientX - bounds.left) / element.clientWidth) * 2 - 1
+		this.position.y = 1 - ((e.clientY - bounds.top) / element.clientHeight) * 2
 		if (event === this.down) {
 			this.pressed = true
 		} else if (event === this.up) {
 			this.pressed = false
+		}
+		if (e instanceof MouseEvent) {
+			this.rightPressed = e.button === 2
 		}
 	}
 
@@ -89,6 +92,7 @@ export class PointerInput {
 }
 
 export const updateMousePosition = () => {
+	document.addEventListener('contextmenu', e => e.preventDefault())
 	for (const event of ['mouseup', 'mousemove', 'mousedown'] as const) {
 		document.addEventListener(event, (e) => {
 			e.preventDefault()
@@ -149,7 +153,6 @@ export const detectInteractions = () => {
 	const hovered: Interactable[] = []
 	const pressed: Interactable[] = []
 	for (const { interactable } of interactableQuery) {
-		interactable.lastTouchedBy = null
 		for (const pointer of PointerInput.all) {
 			const left = interactable.position.x - interactable.dimensions.x / 2
 			const right = interactable.position.x + interactable.dimensions.x / 2

@@ -1,13 +1,14 @@
-import { Box2, Vector2 } from 'three'
+import { Vector2 } from 'three'
 import { kettle } from './kettle'
+import { CameraBounds } from '@/global/camera'
 import { assets, ecs } from '@/global/init'
-import { Sprite } from '@/lib/sprite'
 import { Interactable } from '@/global/interactions'
+import { Sprite } from '@/lib/sprite'
 
 export const spawnCounter = () => {
 	const counter = ecs.add({
 		sprite: new Sprite(assets.sprites.Cafe),
-		cameraBounds: new Box2(),
+		cameraBounds: new CameraBounds(),
 		position: new Vector2(),
 	})
 	ecs.add({

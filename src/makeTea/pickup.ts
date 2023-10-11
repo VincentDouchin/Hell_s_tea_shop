@@ -63,7 +63,7 @@ export const pickupItems = () => {
 
 export const releaseItems = () => {
 	for (const entity of pickedUpQuery) {
-		if (entity.interactable.justPressed) {
+		if (entity.interactable.justPressed || entity.interactable.lastTouchedBy?.rightPressed) {
 			entity.pickable.disable()
 			ecs.removeComponent(entity, 'picked')
 		}

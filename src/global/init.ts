@@ -1,7 +1,8 @@
 import { World } from 'miniplex'
-import type { Box2, Group, OrthographicCamera, Vector2 } from 'three'
+import type { Group, OrthographicCamera, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
+import type { CameraBounds } from './camera'
 import type { Interactable } from './interactions'
 import type { UIElement } from '@/UI/UiElement'
 import type { TextureAltas } from '@/lib/atlas'
@@ -9,8 +10,8 @@ import type { Sprite } from '@/lib/sprite'
 import type { Timer } from '@/lib/time'
 import type { Pickable } from '@/makeTea/pickup'
 import type { Liquid } from '@/makeTea/pour'
-import type { OutlineShader } from '@/shaders/OutlineShader'
 import type { ColorShader } from '@/shaders/ColorShader'
+import type { OutlineShader } from '@/shaders/OutlineShader'
 
 export class Entity {
 	// ! Sprites
@@ -23,7 +24,7 @@ export class Entity {
 	// ! Camera
 	camera?: OrthographicCamera
 	position?: Vector2
-	cameraBounds?: Box2
+	cameraBounds?: CameraBounds
 	group?: Group
 	parent?: Entity
 	children?: Entity[]
