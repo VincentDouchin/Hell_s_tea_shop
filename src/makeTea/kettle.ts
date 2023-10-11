@@ -63,7 +63,7 @@ const spawnKettleButtons = () => {
 				position: new Vector2(50, 0),
 				parent: kettleButton,
 				kettleTableau: true,
-				buttonsToClick: 3,
+				buttonsToClick: { amount: 3, last: null },
 
 			})
 			ecs.add({
@@ -101,18 +101,23 @@ export const setTemperature = () => {
 }
 const resetTableau = () => {
 	for (const entity of kettleTableauQuery) {
-		if (entity.buttonsToClick === 0) {
+		if (entity.buttonsToClick.amount === 0) {
 			for (const kettle of kettleQuery) {
 				kettle.temperature.temperature = Math.min(kettle.temperature.temperature + 10, 100)
 			}
-			entity.buttonsToClick = 3
+			entity.buttonsToClick.amount = 3
 		}
 	}
 }
 
 const setButtonToClick = () => {
-	if (buttonsToClickQuery.entities.every(x => !x.buttonToClick)) {
-		buttonsToClickQuery.entities[Math.floor(Math.random() * buttonsToClickQuery.size)].buttonToClick = true
+	for (const { buttonsToClick } of kettleTableauQuery) {
+		if (buttonsToClickQuery.entities.every(x => !x.buttonToClick)) {
+			const buttons = buttonsToClickQuery.entities.filter(button => button !== buttonsToClick.last)
+			const entity = buttons[Math.floor(Math.random() * buttons.length)]
+			entity.buttonToClick = true
+			buttonsToClick.last = entity
+		}
 	}
 }
 const clickOnButton = () => {
@@ -120,7 +125,7 @@ const clickOnButton = () => {
 		if (entity.interactable.justPressed && entity.buttonToClick) {
 			entity.buttonToClick = false
 			for (const tableau of kettleTableauQuery) {
-				tableau.buttonsToClick -= 1
+				tableau.buttonsToClick.amount -= 1
 			}
 		}
 	}

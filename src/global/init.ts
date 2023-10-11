@@ -45,7 +45,7 @@ export class Entity {
 	kettleButton?: boolean
 	kettleTableau?: boolean
 	buttonToClick?: boolean
-	buttonsToClick?: number
+	buttonsToClick?: { amount: number; last: Entity | null }
 	temperature?: { temperature: number; timer: Timer }
 	temperatureGauge?: boolean
 	closeTableau?: boolean
