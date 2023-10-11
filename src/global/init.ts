@@ -1,5 +1,5 @@
 import { World } from 'miniplex'
-import type { Box2, Group, OrthographicCamera, Vector2 } from 'three'
+import type { Group, OrthographicCamera, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
 import type { CameraBounds } from './camera'
