@@ -1,5 +1,5 @@
 import { World } from 'miniplex'
-import type { Group, OrthographicCamera, Vector2 } from 'three'
+import type { Box2, Group, OrthographicCamera, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
 import type { CameraBounds } from './camera'
@@ -30,7 +30,7 @@ export class Entity {
 	children?: Entity[]
 	interactable?: Interactable
 	showInteractable?: boolean
-
+	anchor?: { bottom?: boolean; top?: boolean; left?: boolean; right?: boolean }
 	pickable?: Pickable
 	picked?: boolean
 	kettle?: boolean

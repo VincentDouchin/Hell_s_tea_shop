@@ -15,6 +15,7 @@ export const spawnCamera = () => {
 export class CameraBounds extends Box2 {}
 const cameraBoundsQuery = ecs.with('cameraBounds', 'sprite', 'position')
 export const cameraQuery = ecs.with('camera', 'position')
+const cameraAnchorQuery = cameraBoundsQuery.with('anchor')
 export const initializeCameraBounds = () => {
 	return cameraBoundsQuery.onEntityAdded.subscribe(({ cameraBounds, position, sprite }) => {
 		cameraBounds.min.x = position.x - sprite.scaledDimensions.x / 2
@@ -30,8 +31,10 @@ export const setCameraZoom = (zoom: number) => () => {
 	}
 }
 export const moveCamera = () => {
-	for (const pointer of PointerInput.all) {
-		for (const { position, camera } of cameraQuery) {
+	for (const { position, camera } of cameraQuery) {
+		const camerax = camera.right / camera.zoom
+		const cameray = camera.top / camera.zoom
+		for (const pointer of PointerInput.all) {
 			const xForce = (Math.abs(pointer.position.x) - 0.8) * 20
 			const yForce = (Math.abs(pointer.position.y) - 0.8) * 20
 			if (pointer.position.x > 0.8) {
@@ -46,13 +49,25 @@ export const moveCamera = () => {
 			if (pointer.position.y < -0.9) {
 				position.y -= yForce
 			}
-			const camerax = camera.right / camera.zoom
-			const cameray = camera.top / camera.zoom
 			for (const { cameraBounds } of cameraBoundsQuery) {
 				position.x = Math.max(position.x, cameraBounds.min.x + camerax)
 				position.x = Math.min(position.x, cameraBounds.max.x - camerax)
 				position.y = Math.max(position.y, cameraBounds.min.y + cameray)
 				position.y = Math.min(position.y, cameraBounds.max.y - cameray)
+			}
+		}
+		for (const { anchor, cameraBounds } of cameraAnchorQuery) {
+			if (anchor.bottom) {
+				position.y = cameraBounds.min.y + cameray
+			}
+			if (anchor.top) {
+				position.y = cameraBounds.max.y - cameray
+			}
+			if (anchor.right) {
+				position.x = cameraBounds.max.x - camerax
+			}
+			if (anchor.left) {
+				position.x = cameraBounds.min.x + camerax
 			}
 		}
 	}
