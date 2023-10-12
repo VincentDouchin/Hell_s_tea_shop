@@ -1,29 +1,27 @@
 {
-  "name": "hell-s-tea-shop",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "generate_Asset_Names": "npx tsx ./scripts/generateAssetNames.ts",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.png"
-  },
-  "devDependencies": {
-    "@antfu/eslint-config": "0.41.0",
-    "@types/three": "^0.156.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
-    "@vite-pwa/assets-generator": "^0.0.10",
-    "csstype": "^3.1.2",
-    "eslint": "^8.51.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "vite-plugin-pwa": "^0.16.5"
-  },
-  "dependencies": {
-    "miniplex": "^2.0.0",
-    "three": "^0.157.0"
-  }
+	"name": "hell-s-tea-shop",
+	"type": "module",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"generate_Asset_Names": "npx tsx ./scripts/generateAssetNames.ts",
+		"generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.png"
+	},
+	"dependencies": {
+		"miniplex": "^2.0.0",
+		"three": "^0.157.0"
+	},
+	"devDependencies": {
+		"@antfu/eslint-config": "^1.0.0-beta.26",
+		"@types/three": "^0.156.0",
+		"@vite-pwa/assets-generator": "^0.0.10",
+		"csstype": "^3.1.2",
+		"eslint": "^8.51.0",
+		"typescript": "^5.0.2",
+		"vite": "^4.4.5",
+		"vite-plugin-pwa": "^0.16.5"
+	}
 }

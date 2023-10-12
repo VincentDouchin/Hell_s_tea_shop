@@ -140,7 +140,7 @@ const closeKettleTableauQuery = ecs.with('interactable', 'closeTableau')
 const finishGame = () => {
 	for (const { interactable } of closeKettleTableauQuery) {
 		if (interactable.justPressed) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			// eslint-disable-next-line ts/no-use-before-define
 			kettleGame.disable()
 		}
 	}

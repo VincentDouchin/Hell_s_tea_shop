@@ -58,11 +58,11 @@ export class Entity {
 	tooltip?: boolean
 }
 type Prettify<T> = {
-  [K in keyof T]: T[K];
+	[K in keyof T]: T[K];
 } & unknown
 
 type KeysOfType<T, U> = {
-  [K in keyof T]: T[K] extends U ? K : never;
+	[K in keyof T]: T[K] extends U ? K : never;
 }[keyof T]
 
 export type ComponentsOfType<T> = Prettify<KeysOfType<Required<Entity>, T>> & keyof Entity
@@ -75,7 +75,8 @@ export const addChildren = () => {
 		if (entity.parent) {
 			if (entity.parent.children) {
 				entity.parent.children.push(entity)
-			} else {
+			}
+			else {
 				ecs.addComponent(entity.parent, 'children', [entity])
 			}
 		}
