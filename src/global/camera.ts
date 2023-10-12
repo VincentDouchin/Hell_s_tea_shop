@@ -1,7 +1,7 @@
-import { Box2, OrthographicCamera, RepeatWrapping, Texture, Vector2 } from 'three'
+import { Box2, OrthographicCamera, Texture, Vector2 } from 'three'
 import { ecs } from './init'
-import { cssRenderer, renderer } from './rendering'
 import { PointerInput } from './interactions'
+import { cssRenderer, renderer } from './rendering'
 
 export const spawnCamera = () => {
 	const width = window.innerWidth
@@ -42,8 +42,7 @@ export const moveCamera = () => {
 			const cameray = camera.top / camera.zoom
 			for (const { scene } of sceneBackgroundQuery) {
 				if (scene.background && scene.background instanceof Texture) {
-					scene.background.offset.x = position.x / scene.background.image.width
-					scene.background.offset.y = position.y / scene.background.image.height
+					scene.background.offset.x = position.x * scene.background.image.width / window.innerWidth
 				}
 			}
 			for (const pointer of PointerInput.all) {
@@ -83,14 +82,7 @@ export const moveCamera = () => {
 		}
 	}
 }
-export const addSceneBackground = () => sceneBackgroundQuery.onEntityAdded.subscribe((entity) => {
-	const texture = entity.sceneBackground.clone()
-	texture.repeat.x = window.innerWidth / texture.image.width
-	texture.repeat.y = window.innerHeight / texture.image.height
-	texture.wrapS = RepeatWrapping
-	texture.wrapT = RepeatWrapping
-	entity.scene.background = texture
-})
+
 export const adjustScreenSize = () => {
 	const screenSize = { x: window.innerWidth, y: window.innerHeight / 2, changed: false }
 	window.addEventListener('resize', () => {
@@ -110,18 +102,9 @@ export const adjustScreenSize = () => {
 				camera.bottom = -window.innerHeight / 2
 				camera.top = window.innerHeight / 2
 			}
-			for (const { scene, sceneBackground } of sceneBackgroundQuery) {
-				if (scene.background && 'repeat' in scene.background) {
-					scene.background.repeat.x = window.innerWidth / sceneBackground.image.width
-					scene.background.repeat.y = window.innerHeight / sceneBackground.image.height
-				}
-			}
 		}
 
 		const zoom: null | number = null
-		// for (const { sprite } of cameraBoundsQuery) {
-		// 	zoom = window.innerWidth / sprite.scaledDimensions.x
-		// }
 		for (const { camera } of cameraQuery) {
 			if (zoom) {
 				camera.zoom = zoom

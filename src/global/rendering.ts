@@ -1,15 +1,17 @@
-import { LinearSRGBColorSpace, Scene, WebGLRenderer } from 'three'
+import { LinearSRGBColorSpace, Scene, Vector2, WebGLRenderer } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { assets, ecs } from './init'
+import { Background } from '@/lib/background'
 
 export const renderer = new WebGLRenderer({ antialias: true, alpha: true })
 export const cssRenderer = new CSS2DRenderer()
 export const scene = new Scene()
 
 export const initRendering = () => {
+	ecs.add({ scene	})
 	ecs.add({
-		scene,
-		sceneBackground: assets.sprites.Wallpaper,
+		sceneBackground: new Background(assets.sprites.Wallpaper),
+		position: new Vector2(0, 0),
 	})
 	const initRenderer = (renderer: WebGLRenderer | CSS2DRenderer) => {
 		renderer.setSize(window.innerWidth, window.innerHeight)

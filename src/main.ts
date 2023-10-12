@@ -1,5 +1,5 @@
 import { showTooltip } from './UI/tooltip'
-import { addSceneBackground, adjustScreenSize, initializeCameraBounds, moveCamera, setCameraZoom, spawnCamera } from './global/camera'
+import { adjustScreenSize, initializeCameraBounds, moveCamera, setCameraZoom, spawnCamera } from './global/camera'
 import { addChildren, despanwChildren } from './global/init'
 import { detectInteractions, updateMousePosition } from './global/interactions'
 import { updatePosition } from './global/position'
@@ -18,7 +18,7 @@ import { addedOutlineShader } from './shaders/OutlineShader'
 
 // ! Core
 new State()
-	.addSubscribers(initializeCameraBounds, addChildren, despanwChildren, addedOutlineShader, ...addToScene(), ...addShaders(), initializeAtlas, addSceneBackground)
+	.addSubscribers(initializeCameraBounds, addChildren, despanwChildren, addedOutlineShader, ...addToScene(), ...addShaders(), initializeAtlas)
 	.onEnter(initRendering, spawnCamera, updateMousePosition)
 	.onUpdate(render, adjustScreenSize(), updatePosition, detectInteractions, updateSpriteFromAtlas, showTooltip)
 	.onExit()

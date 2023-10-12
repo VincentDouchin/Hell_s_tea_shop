@@ -4,7 +4,7 @@ import { scene } from './rendering'
 
 export const addToScene = () => {
 	const sub = new Array<() => () => void>()
-	for (const component of ['sprite', 'camera', 'cssObject'] as const) {
+	for (const component of ['sprite', 'camera', 'cssObject', 'sceneBackground'] as const) {
 		const query = ecs.with(component, 'position')
 		const withoutGroup = query.without('group')
 		sub.push(() => withoutGroup.onEntityAdded.subscribe((entity) => {

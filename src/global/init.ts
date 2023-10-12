@@ -6,17 +6,17 @@ import type { CameraBounds } from './camera'
 import type { Interactable } from './interactions'
 import type { UIElement } from '@/UI/UiElement'
 import type { TextureAltas } from '@/lib/atlas'
+import type { Background } from '@/lib/background'
 import type { Sprite } from '@/lib/sprite'
 import type { Timer } from '@/lib/time'
 import type { Pickable } from '@/makeTea/pickup'
 import type { Liquid } from '@/makeTea/pour'
 import type { ColorShader } from '@/shaders/ColorShader'
 import type { OutlineShader } from '@/shaders/OutlineShader'
-import type { PixelTexture } from '@/lib/pixelTexture'
 
 export class Entity {
 	scene?: Scene
-	sceneBackground?: PixelTexture
+	sceneBackground?: Background
 	// ! Sprites
 	sprite?: Sprite
 	animator?: Timer
