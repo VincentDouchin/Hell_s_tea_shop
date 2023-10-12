@@ -1,5 +1,5 @@
 import { showTooltip } from './UI/tooltip'
-import { adjustScreenSize, initializeCameraBounds, moveCamera, setCameraZoom, spawnCamera } from './global/camera'
+import { addSceneBackground, adjustScreenSize, initializeCameraBounds, moveCamera, setCameraZoom, spawnCamera } from './global/camera'
 import { addChildren, despanwChildren } from './global/init'
 import { detectInteractions, updateMousePosition } from './global/interactions'
 import { updatePosition } from './global/position'
@@ -18,7 +18,7 @@ import { addedOutlineShader } from './shaders/OutlineShader'
 
 // ! Core
 new State()
-	.addSubscribers(initializeCameraBounds, addChildren, despanwChildren, addedOutlineShader, ...addToScene(), ...addShaders(), initializeAtlas)
+	.addSubscribers(initializeCameraBounds, addChildren, despanwChildren, addedOutlineShader, ...addToScene(), ...addShaders(), initializeAtlas, addSceneBackground)
 	.onEnter(initRendering, spawnCamera, updateMousePosition)
 	.onUpdate(render, adjustScreenSize(), updatePosition, detectInteractions, updateSpriteFromAtlas, showTooltip)
 	.onExit()
@@ -28,7 +28,7 @@ new State()
 new State()
 	.addSubscribers()
 	.onEnter(spawnCounter, setCameraZoom(3))
-	.onUpdate(clickOnKettleButton, showPickupItems, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, showPickedItems, SystemSet(pickupItems).runIf(() => !kettleGame.active), releaseItems, changeInfuserSprite, reduceTemperature, moveCamera)
+	.onUpdate(clickOnKettleButton, showPickupItems, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, showPickedItems, SystemSet(pickupItems).runIf(() => !kettleGame.active), releaseItems, changeInfuserSprite, reduceTemperature, moveCamera())
 	.enable()
 
 const animate = (now: number) => {

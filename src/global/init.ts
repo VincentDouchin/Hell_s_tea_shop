@@ -1,5 +1,5 @@
 import { World } from 'miniplex'
-import type { Group, OrthographicCamera, Vector2 } from 'three'
+import type { Group, OrthographicCamera, Scene, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
 import type { CameraBounds } from './camera'
@@ -12,8 +12,11 @@ import type { Pickable } from '@/makeTea/pickup'
 import type { Liquid } from '@/makeTea/pour'
 import type { ColorShader } from '@/shaders/ColorShader'
 import type { OutlineShader } from '@/shaders/OutlineShader'
+import type { PixelTexture } from '@/lib/pixelTexture'
 
 export class Entity {
+	scene?: Scene
+	sceneBackground?: PixelTexture
 	// ! Sprites
 	sprite?: Sprite
 	animator?: Timer

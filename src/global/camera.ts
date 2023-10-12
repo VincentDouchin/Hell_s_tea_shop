@@ -1,4 +1,4 @@
-import { Box2, OrthographicCamera, Vector2 } from 'three'
+import { Box2, OrthographicCamera, RepeatWrapping, Texture, Vector2 } from 'three'
 import { ecs } from './init'
 import { cssRenderer, renderer } from './rendering'
 import { PointerInput } from './interactions'
@@ -30,24 +30,35 @@ export const setCameraZoom = (zoom: number) => () => {
 		camera.updateProjectionMatrix()
 	}
 }
+const sceneBackgroundQuery = ecs.with('scene', 'sceneBackground')
+const interactableQuery = ecs.with('interactable')
+const pickedQuery = ecs.with('picked')
 export const moveCamera = () => {
-	for (const { position, camera } of cameraQuery) {
-		const camerax = camera.right / camera.zoom
-		const cameray = camera.top / camera.zoom
-		for (const pointer of PointerInput.all) {
-			const xForce = (Math.abs(pointer.position.x) - 0.8) * 20
-			const yForce = (Math.abs(pointer.position.y) - 0.8) * 20
-			if (pointer.position.x > 0.8) {
-				position.x += xForce
+	let initialCameraPosition: null | Vector2 = null
+	let initialPointerPosition: null | Vector2 = null
+	return () => {
+		for (const { position, camera } of cameraQuery) {
+			const camerax = camera.right / camera.zoom
+			const cameray = camera.top / camera.zoom
+			for (const { scene } of sceneBackgroundQuery) {
+				if (scene.background && scene.background instanceof Texture) {
+					scene.background.offset.x = position.x / scene.background.image.width
+					scene.background.offset.y = position.y / scene.background.image.height
+				}
 			}
-			if (pointer.position.x < -0.8) {
-				position.x -= xForce
-			}
-			if (pointer.position.y > 0.9) {
-				position.y += yForce
-			}
-			if (pointer.position.y < -0.9) {
-				position.y -= yForce
+			for (const pointer of PointerInput.all) {
+				if (pointer.pressed) {
+					if (interactableQuery.entities.every(({ interactable }) => !interactable.hover) && !pickedQuery.size && !initialCameraPosition && !initialPointerPosition) {
+						initialCameraPosition = position.clone()
+						initialPointerPosition = pointer.position.clone()
+					}
+					if (initialCameraPosition && initialPointerPosition) {
+						position.x = initialCameraPosition.x - (pointer.position.x - initialPointerPosition.x) * 100
+					}
+				} else {
+					initialCameraPosition = null
+					initialPointerPosition = null
+				}
 			}
 			for (const { cameraBounds } of cameraBoundsQuery) {
 				position.x = Math.max(position.x, cameraBounds.min.x + camerax)
@@ -55,24 +66,31 @@ export const moveCamera = () => {
 				position.y = Math.max(position.y, cameraBounds.min.y + cameray)
 				position.y = Math.min(position.y, cameraBounds.max.y - cameray)
 			}
-		}
-		for (const { anchor, cameraBounds } of cameraAnchorQuery) {
-			if (anchor.bottom) {
-				position.y = cameraBounds.min.y + cameray
-			}
-			if (anchor.top) {
-				position.y = cameraBounds.max.y - cameray
-			}
-			if (anchor.right) {
-				position.x = cameraBounds.max.x - camerax
-			}
-			if (anchor.left) {
-				position.x = cameraBounds.min.x + camerax
+			for (const { anchor, cameraBounds } of cameraAnchorQuery) {
+				if (anchor.bottom) {
+					position.y = cameraBounds.min.y + cameray
+				}
+				if (anchor.top) {
+					position.y = cameraBounds.max.y - cameray
+				}
+				if (anchor.right) {
+					position.x = cameraBounds.max.x - camerax
+				}
+				if (anchor.left) {
+					position.x = cameraBounds.min.x + camerax
+				}
 			}
 		}
 	}
 }
-
+export const addSceneBackground = () => sceneBackgroundQuery.onEntityAdded.subscribe((entity) => {
+	const texture = entity.sceneBackground.clone()
+	texture.repeat.x = window.innerWidth / texture.image.width
+	texture.repeat.y = window.innerHeight / texture.image.height
+	texture.wrapS = RepeatWrapping
+	texture.wrapT = RepeatWrapping
+	entity.scene.background = texture
+})
 export const adjustScreenSize = () => {
 	const screenSize = { x: window.innerWidth, y: window.innerHeight / 2, changed: false }
 	window.addEventListener('resize', () => {
@@ -91,6 +109,12 @@ export const adjustScreenSize = () => {
 				camera.right = window.innerWidth / 2
 				camera.bottom = -window.innerHeight / 2
 				camera.top = window.innerHeight / 2
+			}
+			for (const { scene, sceneBackground } of sceneBackgroundQuery) {
+				if (scene.background && 'repeat' in scene.background) {
+					scene.background.repeat.x = window.innerWidth / sceneBackground.image.width
+					scene.background.repeat.y = window.innerHeight / sceneBackground.image.height
+				}
 			}
 		}
 
