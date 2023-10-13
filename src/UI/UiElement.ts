@@ -2,6 +2,8 @@ import type { StandardProperties } from 'csstype'
 import { Vector2 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { toCanvas } from '@/utils/buffer'
+import { ecs } from '@/global/init'
+import { cssRenderer } from '@/global/rendering'
 
 export type margins = number | { x: number; y: number } | { top: number; bottom: number; right: number; left: number }
 
@@ -87,3 +89,17 @@ export class UIElement extends HTMLDivElement {
 	}
 }
 customElements.define('ui-element', UIElement, { extends: 'div' })
+
+const uiElementQuery = ecs.with('uiElement')
+
+export const addUiElements = () => uiElementQuery.onEntityAdded.subscribe((entity) => {
+	if (entity.parent?.uiElement) {
+		entity.parent.uiElement.appendChild(entity.uiElement)
+	} else {
+		cssRenderer.domElement.appendChild(entity.uiElement)
+	}
+})
+export enum UiTag {
+	SwitchButton,
+}
+export const UiTagQuery = (tag: UiTag) => ecs.with('uiTag').where(({ uiTag }) => uiTag === tag)

@@ -4,17 +4,24 @@ import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { loadAssets } from './assets'
 import type { CameraBounds } from './camera'
 import type { Interactable } from './interactions'
-import type { UIElement } from '@/UI/UiElement'
+import type { UIElement, UiTag } from '@/UI/UiElement'
 import type { TextureAltas } from '@/lib/atlas'
 import type { Background } from '@/lib/background'
 import type { Sprite } from '@/lib/sprite'
 import type { Timer } from '@/lib/time'
-import type { Pickable } from '@/makeTea/pickup'
-import type { Liquid } from '@/makeTea/pour'
+import type { Pickable } from '@/kitchen/pickup'
+import type { Liquid } from '@/kitchen/pour'
 import type { ColorShader } from '@/shaders/ColorShader'
 import type { OutlineShader } from '@/shaders/OutlineShader'
+import type { State } from '@/lib/state'
+import type { Order } from '@/serving/orders'
 
 export class Entity {
+	// ! Hierarchy
+	parent?: Entity
+	children?: Entity[]
+	state?: State
+	// ! Scene
 	scene?: Scene
 	sceneBackground?: Background
 	// ! Sprites
@@ -29,13 +36,14 @@ export class Entity {
 	position?: Vector2
 	cameraBounds?: CameraBounds
 	group?: Group
-	parent?: Entity
-	children?: Entity[]
+
 	interactable?: Interactable
 	showInteractable?: boolean
 	anchor?: { bottom?: boolean; top?: boolean; left?: boolean; right?: boolean }
 	pickable?: Pickable
 	picked?: boolean
+	// ! Kitchen
+	counter?: boolean
 	kettle?: boolean
 	cup?: { touchedByInfuser: number }
 	filled?: Liquid
@@ -56,6 +64,10 @@ export class Entity {
 	cssObject?: CSS2DObject
 	uiElement?: UIElement
 	tooltip?: boolean
+	uiTag?: UiTag
+	// ! Serving
+	orderContainer?: boolean
+	order?: Order
 }
 type Prettify<T> = {
 	[K in keyof T]: T[K];

@@ -7,6 +7,7 @@ import { Sprite } from '@/lib/sprite'
 
 export const spawnCounter = () => {
 	const counter = ecs.add({
+		counter: true,
 		sprite: new Sprite(assets.sprites.Cafe),
 		anchor: { bottom: true },
 		cameraBounds: new CameraBounds(),

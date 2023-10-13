@@ -35,7 +35,7 @@ export const showPickupItems = () => {
 	}
 }
 
-const pickableQuery = ecs.with('pickable', 'interactable', 'position')
+const pickableQuery = ecs.with('pickable', 'interactable')
 const pickedUpQuery = pickableQuery.with('picked')
 export const showPickedItems = () => {
 	for (const entity of pickableQuery) {

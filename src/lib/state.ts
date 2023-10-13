@@ -47,6 +47,7 @@ export class State {
 			system()
 		}
 		State.#states.add(this)
+		return this
 	}
 
 	disable() {
@@ -58,5 +59,6 @@ export class State {
 			system()
 		}
 		State.#states.delete(this)
+		return this
 	}
 }

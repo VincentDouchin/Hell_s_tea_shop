@@ -1,6 +1,7 @@
 import type { OrthographicCamera } from 'three'
 import { Raycaster, Vector2, Vector3 } from 'three'
 import { renderer } from './rendering'
+import type { Entity } from '@/global/init'
 import { ecs } from '@/global/init'
 
 export class Interactable {
@@ -54,6 +55,7 @@ export class PointerInput {
 		return Array.from(PointerInput.pointers.values())
 	}
 
+	picked: Entity | null = null
 	position = new Vector2()
 	screenPosition = new Vector2()
 	pressed = false
@@ -121,7 +123,7 @@ export const updateMousePosition = () => {
 
 const worldInteractablesQuery = ecs.with('interactable', 'sprite')
 const cameraQuery = ecs.with('camera')
-// const uiInteractablesQuery = ecs.query.pick(Interactable, UIElement)
+const uiInteractablesQuery = ecs.with('uiElement', 'interactable')
 const interactableQuery = ecs.with('interactable')
 export const detectInteractions = () => {
 	const camera = cameraQuery.entities[0].camera
@@ -141,14 +143,14 @@ export const detectInteractions = () => {
 			interactable.dimensions.y = (interactable.x ?? interactable.y ?? sprite.scaledDimensions.y) * camera.zoom
 		}
 	}
-	// // ! Update interactable position in screen space
-	// for (const [interactable, uiElement] of uiInteractablesQuery.getAll()) {
-	// 	const bounds = uiElement.getBoundingClientRect()
-	// 	interactable.position.x = bounds.x + bounds.width / 2
-	// 	interactable.position.y = bounds.y + bounds.height / 2
-	// 	interactable.dimensions.x = bounds.width
-	// 	interactable.dimensions.y = bounds.height
-	// }
+	// ! Update interactable position in screen space
+	for (const { interactable, uiElement } of uiInteractablesQuery) {
+		const bounds = uiElement.getBoundingClientRect()
+		interactable.position.x = bounds.x + bounds.width / 2
+		interactable.position.y = bounds.y + bounds.height / 2
+		interactable.dimensions.x = bounds.width
+		interactable.dimensions.y = bounds.height
+	}
 
 	const hovered: Interactable[] = []
 	const pressed: Interactable[] = []
