@@ -1,6 +1,6 @@
 import type { OrthographicCamera } from 'three'
 import { Raycaster, Vector2, Vector3 } from 'three'
-import { renderer } from './rendering'
+import { renderer, scene } from './rendering'
 import type { Entity } from '@/global/init'
 import { ecs } from '@/global/init'
 
@@ -13,7 +13,7 @@ export class Interactable {
 	position = new Vector2()
 	dimensions = new Vector2()
 	constructor(public x?: number, public y?: number) {	}
-
+	enabled = true
 	get pressed() {
 		return this.#pressed
 	}
@@ -74,8 +74,12 @@ export class PointerInput {
 		} else if (event === this.up) {
 			this.pressed = false
 		}
-		if (e instanceof MouseEvent) {
-			this.rightPressed = e.button === 2
+		if (e instanceof MouseEvent && e.button === 2) {
+			if (event === this.down) {
+				this.rightPressed = true
+			} else if (event === this.up) {
+				this.rightPressed = false
+			}
 		}
 	}
 
@@ -121,7 +125,7 @@ export const updateMousePosition = () => {
 	}
 }
 
-const worldInteractablesQuery = ecs.with('interactable', 'sprite')
+const worldInteractablesQuery = ecs.with('interactable', 'sprite', 'group')
 const cameraQuery = ecs.with('camera')
 const uiInteractablesQuery = ecs.with('uiElement', 'interactable')
 const interactableQuery = ecs.with('interactable')
@@ -129,18 +133,23 @@ export const detectInteractions = () => {
 	const camera = cameraQuery.entities[0].camera
 	if (camera) {
 		// ! Update interactable position in world space
-		for (const { interactable, sprite } of worldInteractablesQuery) {
-			let pos = new Vector3()
-			pos = pos.setFromMatrixPosition(sprite.matrixWorld)
-			pos.project(camera)
-			const widthHalf = window.innerWidth / 2
-			const heightHalf = window.innerHeight / 2
+		for (const { interactable, sprite, group } of worldInteractablesQuery) {
+			if (scene.getObjectById(group.id)) {
+				let pos = new Vector3()
+				pos = pos.setFromMatrixPosition(sprite.matrixWorld)
+				pos.project(camera)
+				const widthHalf = window.innerWidth / 2
+				const heightHalf = window.innerHeight / 2
 
-			interactable.position.x = (pos.x * widthHalf) + widthHalf
-			interactable.position.y = -(pos.y * heightHalf) + heightHalf
+				interactable.position.x = (pos.x * widthHalf) + widthHalf
+				interactable.position.y = -(pos.y * heightHalf) + heightHalf
 
-			interactable.dimensions.x = (interactable.x ?? sprite.scaledDimensions.x) * camera.zoom
-			interactable.dimensions.y = (interactable.x ?? interactable.y ?? sprite.scaledDimensions.y) * camera.zoom
+				interactable.dimensions.x = (interactable.x ?? sprite.scaledDimensions.x) * camera.zoom
+				interactable.dimensions.y = (interactable.x ?? interactable.y ?? sprite.scaledDimensions.y) * camera.zoom
+				interactable.enabled = true
+			} else {
+				interactable.enabled = false
+			}
 		}
 	}
 	// ! Update interactable position in screen space
@@ -155,20 +164,25 @@ export const detectInteractions = () => {
 	const hovered: Interactable[] = []
 	const pressed: Interactable[] = []
 	for (const { interactable } of interactableQuery) {
-		for (const pointer of PointerInput.all) {
-			const left = interactable.position.x - interactable.dimensions.x / 2
-			const right = interactable.position.x + interactable.dimensions.x / 2
-			const top = interactable.position.y + interactable.dimensions.y / 2
-			const bottom = interactable.position.y - interactable.dimensions.y / 2
-			if (pointer.screenPosition.x > left && pointer.screenPosition.x < right && pointer.screenPosition.y < top && pointer.screenPosition.y > bottom) {
-				hovered.push(interactable)
-				interactable.lastTouchedBy = pointer
-				if (pointer.pressed) {
-					pressed.push(interactable)
+		if (interactable.enabled) {
+			for (const pointer of PointerInput.all) {
+				const left = interactable.position.x - interactable.dimensions.x / 2
+				const right = interactable.position.x + interactable.dimensions.x / 2
+				const top = interactable.position.y + interactable.dimensions.y / 2
+				const bottom = interactable.position.y - interactable.dimensions.y / 2
+				if (pointer.screenPosition.x > left && pointer.screenPosition.x < right && pointer.screenPosition.y < top && pointer.screenPosition.y > bottom) {
+					hovered.push(interactable)
+					interactable.lastTouchedBy = pointer
+					if (pointer.pressed) {
+						pressed.push(interactable)
+					}
 				}
 			}
+			interactable.hover = hovered.includes(interactable)
+			interactable.pressed = pressed.includes(interactable)
+		} else {
+			interactable.hover = false
+			interactable.pressed = false
 		}
-		interactable.hover = hovered.includes(interactable)
-		interactable.pressed = pressed.includes(interactable)
 	}
 }

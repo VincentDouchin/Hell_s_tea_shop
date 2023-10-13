@@ -1,12 +1,23 @@
+import type { With } from 'miniplex'
+import type { Vector2 } from 'three'
 import { Liquid } from './pour'
-import { ecs } from '@/global/init'
+import type { Entity } from '@/global/init'
+import { ecs, removeParent } from '@/global/init'
+import { Interactable } from '@/global/interactions'
+import { Sprite } from '@/lib/sprite'
 import { ColorShader } from '@/shaders/ColorShader'
 import { OutlineShader } from '@/shaders/OutlineShader'
 import { sleep } from '@/utils/sleep'
 
+export enum Slot {
+	Cup,
+	Kettle,
+	Infuser,
+}
+
 export class Pickable {
 	enabled = false
-	constructor(public cursor: HTMLCanvasElement) {
+	constructor(public slot: Slot, public cursor: HTMLCanvasElement) {
 	}
 
 	enable() {
@@ -35,37 +46,60 @@ export const showPickupItems = () => {
 	}
 }
 
-const pickableQuery = ecs.with('pickable', 'interactable')
-const pickedUpQuery = pickableQuery.with('picked')
-export const showPickedItems = () => {
-	for (const entity of pickableQuery) {
-		const { pickable, colorShader } = entity
-		if (pickable.enabled && !colorShader) {
-			ecs.addComponent(entity, 'colorShader', new ColorShader([1, 1, 1, 0.5]))
-		}
-		if (!pickable.enabled && colorShader) {
-			ecs.removeComponent(entity, 'colorShader')
-		}
-	}
-}
+const pickableQuery = ecs.with('pickable', 'interactable', 'sprite', 'position')
+const pickedUpQuery = ecs.with('picked', 'pickable')
 
+export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot, defaultSlot = false): Entity => ({
+	colorShader: new ColorShader([1, 1, 1, 0.5]),
+	interactable: new Interactable(),
+	showInteractable: true,
+	sprite: new Sprite(sprite.texture),
+	position,
+	slot,
+	defaultSlot,
+
+})
 export const pickupItems = () => {
 	if (pickedUpQuery.size === 0) {
 		for (const entity of pickableQuery) {
-			const { interactable, pickable } = entity
-			if (interactable.justPressed) {
+			const { interactable, pickable, sprite, position, parent } = entity
+			if (interactable.justPressed && !interactable.lastTouchedBy?.rightPressed) {
 				sleep(100).then(() => ecs.addComponent(entity, 'picked', true))
+
 				pickable.enable()
+				ecs.add({
+					...slotEntity(sprite, position, pickable.slot, true),
+					parent,
+				})
+				ecs.removeComponent(entity, 'position')
+				removeParent(entity)
 			}
 		}
 	}
 }
 
+const switchSlotWithPickedUp = (slotEntity: With<Entity, 'interactable' | 'slot'>, pickedUpEntity: With<Entity, 'pickable' | 'picked'>) => {
+	sleep(100).then(() =>	ecs.removeComponent(pickedUpEntity, 'picked'))
+	ecs.addComponent(pickedUpEntity, 'parent', slotEntity.parent)
+	ecs.addComponent(pickedUpEntity, 'position', slotEntity.position?.clone())
+	pickedUpEntity.pickable.disable()
+	ecs.remove(slotEntity)
+}
+const slotsQuery = ecs.with('slot', 'interactable')
+const defaultSlotQuery = slotsQuery.with('defaultSlot')
 export const releaseItems = () => {
-	for (const entity of pickedUpQuery) {
-		if (entity.interactable.justPressed || entity.interactable.lastTouchedBy?.rightPressed) {
-			entity.pickable.disable()
-			ecs.removeComponent(entity, 'picked')
+	for (const pickedUpEntity of pickedUpQuery) {
+		for (const slotEntity of slotsQuery) {
+			if (slotEntity.interactable.justPressed && slotEntity.slot === pickedUpEntity.pickable.slot) {
+				switchSlotWithPickedUp(slotEntity, pickedUpEntity)
+			}
+		}
+		if (pickedUpEntity.interactable?.lastTouchedBy?.rightPressed) {
+			for (const slotEntity of defaultSlotQuery) {
+				if (slotEntity.defaultSlot && slotEntity.slot === pickedUpEntity.pickable.slot) {
+					switchSlotWithPickedUp(slotEntity, pickedUpEntity)
+				}
+			}
 		}
 	}
 }

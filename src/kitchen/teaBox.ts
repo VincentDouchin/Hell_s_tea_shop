@@ -1,15 +1,19 @@
 import { Vector2 } from 'three'
-import { Pickable } from './pickup'
-import { assets, ecs, removeParent } from '@/global/init'
+import { Pickable, Slot } from './pickup'
+import { Teas } from '@/constants/tea'
+import { cameraQuery } from '@/global/camera'
+import { assets, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
-import { cameraQuery } from '@/global/camera'
-import { Teas } from '@/constants/tea'
 
 const teaBoxOpenedQuery = ecs.with('teaBoxOpened', 'interactable')
+const teaBoxVisibleQuery = teaBoxOpenedQuery.with('position')
 const teaBoxQuery = ecs.with('teaBox', 'interactable')
-const infuserQuery = ecs.with('sprite', 'infuser')
-
+export const closeTeaBox = () => {
+	for (const entity of teaBoxVisibleQuery) {
+		ecs.removeComponent(entity, 'position')
+	}
+}
 export const openTeabox = () => {
 	const teaScale = 1
 	const xPositions = [-48, -16, 16]
@@ -21,6 +25,7 @@ export const openTeabox = () => {
 			if (interactable.justPressed) {
 				if (teaBoxOpenedQuery.size === 0) {
 					const box = ecs.add({
+						renderOrder: 2,
 						sprite: new Sprite(assets.sprites.TeaBox).setScale(teaScale),
 						position: cameraPosition,
 						interactable: new Interactable(),
@@ -38,30 +43,22 @@ export const openTeabox = () => {
 							})
 						}
 					}
-					if (!infuserQuery.size) {
-						ecs.add({
-							parent: box,
-							sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(teaScale),
-							position: new Vector2(47.5, -16),
-							pickable: new Pickable(assets.ui.InfuserCursor),
-							interactable: new Interactable(),
-							showInteractable: true,
-							infuser: true,
-						})
-					} else {
-						for (const entity of infuserQuery) {
-							ecs.addComponent(entity,'interactable',new Interactable())
-							ecs.addComponent(entity, 'parent', box)
-							ecs.addComponent(entity, 'position', new Vector2(47.5, -15))
-						}
-					}
+					ecs.add({
+						parent: box,
+						sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(teaScale),
+						position: new Vector2(47.5, -16),
+						pickable: new Pickable(Slot.Infuser, assets.ui.InfuserCursor),
+						interactable: new Interactable(),
+						showInteractable: true,
+						infuser: true,
+					})
 				} else {
-					for (const entity of infuserQuery) {
-						ecs.removeComponent(entity, 'position')
-						removeParent(entity)
-					}
-					for (const entity of teaBoxOpenedQuery) {
-						ecs.remove(entity)
+					if (teaBoxVisibleQuery.size) {
+						closeTeaBox()
+					} else {
+						for (const entity of teaBoxOpenedQuery) {
+							ecs.addComponent(entity, 'position', cameraPosition)
+						}
 					}
 				}
 			}

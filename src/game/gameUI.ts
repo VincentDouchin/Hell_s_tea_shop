@@ -38,18 +38,18 @@ export const spawnServingUi = () => {
 }
 const ordersQuery = ecs.with('order')
 const orderContainerQuery = ecs.with('orderContainer')
+const addRandomOrder = () => {
+	const tea = Teas[Math.floor(Math.random() * Teas.length)]
+	ecs.add({
+		order: new Order(tea),
+	})
+}
 export const addOrders = () => ordersQuery.onEntityAdded.subscribe(({ order }) => {
 	for (const orderContainer of orderContainerQuery) {
 		ecs.add({
 			parent: orderContainer,
 			uiElement: new UIElement().text(order.tea.name),
 		})
+		addRandomOrder()
 	}
 })
-// @ts-expect-error testing
-window.addRandomOrder = () => {
-	const tea = Teas[Math.floor(Math.random() * Teas.length)]
-	ecs.add({
-		order: new Order(tea),
-	})
-}

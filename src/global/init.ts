@@ -9,7 +9,7 @@ import type { TextureAltas } from '@/lib/atlas'
 import type { Background } from '@/lib/background'
 import type { Sprite } from '@/lib/sprite'
 import type { Timer } from '@/lib/time'
-import type { Pickable } from '@/kitchen/pickup'
+import type { Pickable, Slot } from '@/kitchen/pickup'
 import type { Liquid } from '@/kitchen/pour'
 import type { ColorShader } from '@/shaders/ColorShader'
 import type { OutlineShader } from '@/shaders/OutlineShader'
@@ -28,6 +28,8 @@ export class Entity {
 	sprite?: Sprite
 	animator?: Timer
 	atlas?: TextureAltas
+	group?: Group
+	renderOrder?: number
 	// ! Shaders
 	outlineShader?: OutlineShader
 	colorShader?: ColorShader
@@ -35,13 +37,14 @@ export class Entity {
 	camera?: OrthographicCamera
 	position?: Vector2
 	cameraBounds?: CameraBounds
-	group?: Group
-
+	anchor?: { bottom?: boolean; top?: boolean; left?: boolean; right?: boolean }
+	// ! Interactions
 	interactable?: Interactable
 	showInteractable?: boolean
-	anchor?: { bottom?: boolean; top?: boolean; left?: boolean; right?: boolean }
 	pickable?: Pickable
 	picked?: boolean
+	slot?: Slot
+	defaultSlot?: boolean
 	// ! Kitchen
 	counter?: boolean
 	kettle?: boolean
@@ -66,6 +69,7 @@ export class Entity {
 	tooltip?: boolean
 	uiTag?: UiTag
 	// ! Serving
+	servingCounter?: boolean
 	orderContainer?: boolean
 	order?: Order
 }
@@ -105,6 +109,9 @@ export const removeParent = (entity: Entity) => {
 	if (entity.parent) {
 		entity.parent.children = entity.parent.children?.filter(c => c !== entity)
 		ecs.removeComponent(entity, 'parent')
+		if (entity.group) {
+			entity.group.removeFromParent()
+		}
 	}
 }
 export const despawnOfType = (c: Component) => {

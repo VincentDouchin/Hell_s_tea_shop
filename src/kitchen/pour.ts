@@ -5,7 +5,7 @@ export enum Liquid {
 	Tea,
 }
 
-const kettleQuery = ecs.with('kettle', 'picked', 'position', 'sprite', 'group')
+const kettleQuery = ecs.with('kettle', 'picked', 'sprite', 'group')
 const cupQuery = ecs.with('cup', 'position', 'sprite', 'interactable').without('filled')
 
 export const pourWater = () => {

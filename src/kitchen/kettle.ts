@@ -1,5 +1,5 @@
 import { Vector2 } from 'three'
-import { Pickable } from './pickup'
+import { Pickable, Slot } from './pickup'
 import type { Entity } from '@/global/init'
 import { assets, despawnOfType, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
@@ -15,7 +15,7 @@ export const kettle = (parent: Entity) => {
 		position: new Vector2(-200, -70),
 		interactable: new Interactable(),
 		showInteractable: true,
-		pickable: new Pickable(assets.ui.KettleCursor),
+		pickable: new Pickable(Slot.Kettle, assets.ui.KettleCursor),
 		kettle: true,
 		parent,
 		temperature: { temperature: 0, timer: new Timer(5000) },

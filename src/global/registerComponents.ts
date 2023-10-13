@@ -9,22 +9,23 @@ export const addToScene = () => {
 		const withoutGroup = query.without('group')
 		sub.push(() => withoutGroup.onEntityAdded.subscribe((entity) => {
 			const group = new Group()
+			group.renderOrder = (entity.renderOrder ?? 1) + (entity.parent?.renderOrder ?? 0)
 			group.position.x = entity.position.x
 			group.position.y = entity.position.y
 			group.add(entity[component])
 			ecs.addComponent(entity, 'group', group)
-			if (entity.parent?.group) {
-				entity.parent.group.add(group)
-			} else {
-				scene.add(group)
-			}
 		}))
 		const withGroup = query.with('group')
 		sub.push(() => withGroup.onEntityAdded.subscribe((entity) => {
 			entity.group.add(entity[component])
+			if (entity.parent?.group) {
+				entity.parent.group.add(entity.group)
+			} else {
+				scene.add(entity.group)
+			}
 		}))
-		sub.push(() => query.onEntityRemoved.subscribe((entity) => {
-			entity[component].removeFromParent()
+		sub.push(() => withGroup.onEntityRemoved.subscribe((entity) => {
+			entity.group.removeFromParent()
 		}))
 	}
 	return sub
