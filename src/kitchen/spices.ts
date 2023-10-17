@@ -3,6 +3,8 @@ import { assets, ecs } from '@/global/init'
 import { Sprite } from '@/lib/sprite'
 import { Spices } from '@/constants/spices'
 import { Interactable } from '@/global/interactions'
+import { UIElement } from '@/UI/UiElement'
+import { Tooltip } from '@/UI/tooltip'
 
 const spiceShelfQuery = ecs.with('spiceShelf')
 export const spawnSpiceShelf = () => {
@@ -18,12 +20,18 @@ export const spawnSpiceShelf = () => {
 			const y = (row * 32) + 16 - assets.sprites.shelf.image.height / 2 + spice.sprite.image.height / 2
 			const x = -assets.sprites.shelf.image.width / 2 + spice.sprite.image.width / 2 + rows[row]
 			rows[row] += spice.sprite.image.width
-			ecs.add({
+			const spriceEntity = ecs.add({
 				sprite: new Sprite(spice.sprite),
 				position: new Vector2(x, y),
 				parent: shelf,
 				interactable: new Interactable(),
 				showInteractable: true,
+				spice: spice.name,
+			})
+			ecs.add({
+				...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),
+				tooltip: Tooltip.Spice,
+				parent: spriceEntity,
 			})
 		}
 	}

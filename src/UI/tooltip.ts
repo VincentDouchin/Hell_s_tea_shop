@@ -4,12 +4,14 @@ import { ecs } from '@/global/init'
 export enum Tooltip {
 	Temperature,
 	Tea,
+	Spice,
 }
 
 const getTooltipText = (tooltip: Tooltip, parent: Entity) => {
 	switch (tooltip) {
 		case Tooltip.Temperature:return `${parent.parent?.temperature?.temperature}°`
 		case Tooltip.Tea:return parent.tea
+		case Tooltip.Spice:return parent.spice
 	}
 }
 

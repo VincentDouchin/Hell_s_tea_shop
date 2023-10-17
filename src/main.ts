@@ -6,7 +6,7 @@ import { setRenderOrder } from './global/groups'
 import { addChildren, despanwChildren, kitchenState, servingState } from './global/init'
 import { detectInteractions, updateMousePosition } from './global/interactions'
 import { updatePosition } from './global/position'
-import { addShaders, addToScene } from './global/registerComponents'
+import { addShaders, addToScene, changeRenderOrder } from './global/registerComponents'
 import { initRendering, kitchenScene, render, servingScene, setCurrentScene, spawnBackground } from './global/rendering'
 import { spawnCounter as spawnKitchenCounter } from './kitchen/counter'
 import { clickOnKettleButton, kettleGame, reduceTemperature, setTemperature } from './kitchen/kettle'
@@ -19,21 +19,22 @@ import { State } from './lib/state'
 import { SystemSet } from './lib/systemset'
 import { time } from './lib/time'
 import { spawnServingCounter } from './serving/counter'
-import { hideCustomer, showCustomer, spawnOrder } from './serving/customer'
+import { customerLeave, hideCustomer, showCustomer, spawnOrder } from './serving/customer'
 import { serveOrder } from './serving/orders'
 import { addedOutlineShader } from './shaders/OutlineShader'
+import { Tween } from './utils/tween'
 
 // ! Core
 new State()
 	.addSubscribers(initializeCameraBounds, addChildren, despanwChildren, addedOutlineShader, ...addToScene(), ...addShaders(), initializeAtlas, addUiElements, removeUiElements)
 	.onEnter(initRendering, spawnCamera, updateMousePosition)
-	.onUpdate(render, adjustScreenSize(), updatePosition, detectInteractions, updateSpriteFromAtlas, showTooltip, setRenderOrder, showPickupItems)
+	.onUpdate(render, adjustScreenSize(), updatePosition, detectInteractions, updateSpriteFromAtlas, showTooltip, setRenderOrder, showPickupItems, changeRenderOrder)
 	.onExit()
 	.enable()
 
 // ! Game State
 new State()
-	.addSubscribers(addOrders, removeOrders)
+	.addSubscribers(addOrders, removeOrders, customerLeave)
 	.onEnter(spawnKitchenUi, spawnServingUi, spawnOrder)
 	.onUpdate(changeState, releaseItems, SystemSet(pickupItems).runIf(() => !kettleGame.active))
 	.enable()
@@ -56,6 +57,7 @@ servingState
 const animate = (now: number) => {
 	time.tick(now)
 	State.update()
+	Tween.update(time.delta)
 	requestAnimationFrame(animate)
 }
 animate(Date.now())

@@ -2,7 +2,7 @@ import type { With } from 'miniplex'
 import type { Vector2 } from 'three'
 import { Liquid } from './pour'
 import type { Entity } from '@/global/init'
-import { ecs, removeParent } from '@/global/init'
+import { assets, ecs, removeParent } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
 import { ColorShader } from '@/shaders/ColorShader'
@@ -59,16 +59,28 @@ export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot, defaul
 	defaultSlot,
 
 })
+const slotSprites = {
+	[Slot.Cup]: assets.sprites.CupEmpty,
+	[Slot.Infuser]: assets.sprites.InfuserBox,
+	[Slot.Kettle]: assets.sprites.Kettle1,
+}
+const slotsQuery = ecs.with('slot', 'interactable')
+const defaultSlotQuery = slotsQuery.with('defaultSlot')
 export const pickupItems = () => {
 	if (pickedUpQuery.size === 0) {
 		for (const entity of pickableQuery) {
-			const { interactable, pickable, sprite, position, parent } = entity
+			const { interactable, pickable, position, parent } = entity
 			if (interactable.justPressed && !interactable.lastTouchedBy?.rightPressed) {
+				for (const entity of defaultSlotQuery) {
+					if (entity.slot === pickable.slot) {
+						ecs.removeComponent(entity, 'defaultSlot')
+					}
+				}
 				sleep(100).then(() => ecs.addComponent(entity, 'picked', true))
 
 				pickable.enable()
 				ecs.add({
-					...slotEntity(sprite, position, pickable.slot, true),
+					...slotEntity(new Sprite(slotSprites[pickable.slot]), position, pickable.slot, true),
 					parent,
 				})
 				ecs.removeComponent(entity, 'position')
@@ -78,7 +90,7 @@ export const pickupItems = () => {
 	}
 }
 
-const switchSlotWithPickedUp = (slotEntity: With<Entity, 'interactable' | 'slot'>, pickedUpEntity: With<Entity, 'pickable' | 'picked'>) => {
+export const switchSlotWithPickedUp = (slotEntity: With<Entity, 'interactable' | 'slot'>, pickedUpEntity: With<Entity, 'pickable' | 'picked'>) => {
 	sleep(100).then(() =>	ecs.removeComponent(pickedUpEntity, 'picked'))
 	if (slotEntity.renderOrder) {
 		ecs.addComponent(pickedUpEntity, 'renderOrder', slotEntity.renderOrder)
@@ -88,8 +100,7 @@ const switchSlotWithPickedUp = (slotEntity: With<Entity, 'interactable' | 'slot'
 	pickedUpEntity.pickable.disable()
 	ecs.remove(slotEntity)
 }
-const slotsQuery = ecs.with('slot', 'interactable')
-const defaultSlotQuery = slotsQuery.with('defaultSlot')
+
 export const releaseItems = () => {
 	for (const pickedUpEntity of pickedUpQuery) {
 		for (const slotEntity of slotsQuery) {

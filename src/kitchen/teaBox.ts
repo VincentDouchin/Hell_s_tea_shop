@@ -23,7 +23,7 @@ export const openTeabox = () => {
 			if (interactable.justPressed) {
 				if (teaBoxOpenedQuery.size === 0) {
 					const box = ecs.add({
-						renderOrder: 2,
+						renderOrder: 3,
 						sprite: new Sprite(assets.sprites.TeaBox).setScale(teaScale),
 						position: cameraPosition,
 						interactable: new Interactable(),

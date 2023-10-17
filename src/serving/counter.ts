@@ -9,7 +9,7 @@ export const spawnServingCounter = () => {
 	if (!servingCounterQuery.size) {
 		// ! Counter
 		const counter = ecs.add({
-			renderOrder: 2,
+			renderOrder: 1,
 			sprite: new Sprite(assets.sprites.Cafe),
 			position: new Vector2(),
 			servingCounter: true,
@@ -35,7 +35,7 @@ export const spawnServingCounter = () => {
 		// ! Cup Slot
 		ecs.add({
 			parent: tray,
-			renderOrder: 2,
+			renderOrder: 1,
 			...slotEntity(new Sprite(assets.sprites.CupEmpty), new Vector2(), Slot.Cup, false),
 		})
 	}

@@ -9,7 +9,6 @@ export const addToScene = () => {
 		const withoutGroup = query.without('group')
 		sub.push(() => withoutGroup.onEntityAdded.subscribe((entity) => {
 			const group = new Group()
-			group.renderOrder = (entity.renderOrder ?? 1) + (entity.parent?.renderOrder ?? 0)
 			group.position.x = entity.position.x
 			group.position.y = entity.position.y
 			group.add(entity[component])
@@ -45,4 +44,11 @@ export const addShaders = () => {
 		}))
 	}
 	return sub
+}
+const renderOrderQuery = ecs.with('group')
+export const changeRenderOrder = () => {
+	for (const entity of renderOrderQuery) {
+		const { group, renderOrder, parent } = entity
+		group.renderOrder = (renderOrder ?? 1) + (parent?.group?.renderOrder ?? 0)
+	}
 }

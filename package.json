@@ -12,7 +12,8 @@
 	},
 	"dependencies": {
 		"miniplex": "^2.0.0",
-		"three": "^0.157.0"
+		"three": "^0.157.0",
+		"ts-easing": "^0.2.0"
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^1.0.0-beta.26",
