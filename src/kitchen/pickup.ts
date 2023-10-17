@@ -118,11 +118,12 @@ export const releaseItems = () => {
 	}
 }
 
-const teaQuery = ecs.with('tea', 'interactable', 'tea')
+const teaQuery = ecs.with('tea', 'interactable')
 export const pickupTea = () => {
 	for (const entity of infuserPickedUpQuery) {
 		for (const { interactable, tea } of teaQuery) {
 			if (interactable.justReleased) {
+				ecs.removeComponent(entity, 'infuserFilled')
 				ecs.addComponent(entity, 'infuserFilled', tea)
 			}
 		}
