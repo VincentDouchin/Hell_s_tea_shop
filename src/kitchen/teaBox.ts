@@ -72,9 +72,4 @@ export const openTeabox = () => {
 	}
 }
 
-const filledInfuserQuery = ecs.with('infuserFilled', 'sprite')
-export const changeInfuserSprite = () => {
-	for (const { sprite } of filledInfuserQuery) {
-		sprite.texture = assets.sprites.InfuserFull
-	}
-}
+
