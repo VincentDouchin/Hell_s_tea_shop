@@ -80,6 +80,9 @@ export const pickupItems = () => {
 
 const switchSlotWithPickedUp = (slotEntity: With<Entity, 'interactable' | 'slot'>, pickedUpEntity: With<Entity, 'pickable' | 'picked'>) => {
 	sleep(100).then(() =>	ecs.removeComponent(pickedUpEntity, 'picked'))
+	if (slotEntity.renderOrder) {
+		ecs.addComponent(pickedUpEntity, 'renderOrder', slotEntity.renderOrder)
+	}
 	ecs.addComponent(pickedUpEntity, 'parent', slotEntity.parent)
 	ecs.addComponent(pickedUpEntity, 'position', slotEntity.position?.clone())
 	pickedUpEntity.pickable.disable()
@@ -104,12 +107,12 @@ export const releaseItems = () => {
 	}
 }
 
-const teaQuery = ecs.with('tea', 'interactable')
+const teaQuery = ecs.with('tea', 'interactable', 'tea')
 export const pickupTea = () => {
 	for (const entity of infuserPickedUpQuery) {
-		for (const { interactable } of teaQuery) {
+		for (const { interactable, tea } of teaQuery) {
 			if (interactable.justReleased) {
-				ecs.addComponent(entity, 'infuserFilled', true)
+				ecs.addComponent(entity, 'infuserFilled', tea)
 			}
 		}
 	}
@@ -118,7 +121,7 @@ export const pickupTea = () => {
 const infuserFullPickedUpQuery = infuserPickedUpQuery.with('infuserFilled')
 const cupQuery = ecs.with('cup', 'interactable', 'filled')
 export const infuseTea = () => {
-	if (infuserFullPickedUpQuery.size) {
+	for (const infuserEntity of infuserFullPickedUpQuery) {
 		for (const cupEntity of cupQuery) {
 			const { cup, interactable, filled } = cupEntity
 			if (interactable.justPressed && filled === Liquid.Water) {
@@ -126,6 +129,8 @@ export const infuseTea = () => {
 				if (cup.touchedByInfuser === 3) {
 					ecs.removeComponent(cupEntity, 'filled')
 					ecs.addComponent(cupEntity, 'filled', Liquid.Tea)
+					ecs.addComponent(cupEntity, 'tea', infuserEntity.infuserFilled)
+					ecs.removeComponent(infuserEntity, 'infuserFilled')
 				}
 			}
 		}

@@ -8,6 +8,7 @@ import { Sprite } from '@/lib/sprite'
 import { State } from '@/lib/state'
 import { UIElement } from '@/UI/UiElement'
 import { Timer, time } from '@/lib/time'
+import { Tooltip } from '@/UI/tooltip'
 
 export const kettle = (parent: Entity) => {
 	const kettle = ecs.add({
@@ -29,7 +30,7 @@ export const kettle = (parent: Entity) => {
 	})
 	ecs.add({
 		...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),
-		tooltip: true,
+		tooltip: Tooltip.Temperature,
 		parent: gauge,
 	})
 	ecs.add({

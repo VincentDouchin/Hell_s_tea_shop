@@ -5,15 +5,13 @@ import { cameraQuery } from '@/global/camera'
 import { assets, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
+import { Tooltip } from '@/UI/tooltip'
+import { UIElement } from '@/UI/UiElement'
 
 const teaBoxOpenedQuery = ecs.with('teaBoxOpened', 'interactable')
 const teaBoxVisibleQuery = teaBoxOpenedQuery.with('position')
 const teaBoxQuery = ecs.with('teaBox', 'interactable')
-export const closeTeaBox = () => {
-	for (const entity of teaBoxVisibleQuery) {
-		ecs.removeComponent(entity, 'position')
-	}
-}
+
 export const openTeabox = () => {
 	const teaScale = 1
 	const xPositions = [-48, -16, 16]
@@ -33,13 +31,19 @@ export const openTeabox = () => {
 					})
 					for (let x = 0; x < 3; x++) {
 						for (let y = 0; y < 3; y++) {
-							ecs.add({
+							const tea = Teas[x * 3 + y]
+							const teaEntity = ecs.add({
 								parent: box,
-								sprite: new Sprite(Teas[x * 3 + y].image).setScale(teaScale),
+								sprite: new Sprite(tea.image).setScale(teaScale),
 								interactable: new Interactable(),
 								showInteractable: true,
 								position: new Vector2(xPositions[x], yPositions[y]),
-								tea: true,
+								tea: tea.name,
+							})
+							ecs.add({
+								...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),
+								tooltip: Tooltip.Tea,
+								parent: teaEntity,
 							})
 						}
 					}
@@ -54,7 +58,9 @@ export const openTeabox = () => {
 					})
 				} else {
 					if (teaBoxVisibleQuery.size) {
-						closeTeaBox()
+						for (const entity of teaBoxVisibleQuery) {
+							ecs.removeComponent(entity, 'position')
+						}
 					} else {
 						for (const entity of teaBoxOpenedQuery) {
 							ecs.addComponent(entity, 'position', cameraPosition)

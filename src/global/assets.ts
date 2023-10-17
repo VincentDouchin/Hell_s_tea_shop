@@ -34,6 +34,7 @@ export const loadAssets = async () => {
 	return {
 		sprites: await spriteLoader.loadRecord<sprites>(import.meta.glob('@assets/sprites/*.png', { eager: true })),
 		tea: await spriteLoader.loadRecord<tea>(import.meta.glob('@assets/tea/*.png', { eager: true })),
+		spices: await spriteLoader.loadRecord<spices>(import.meta.glob('@assets/spices/*.png', { eager: true })),
 		atlas: await atlasLoader.loadRecord<atlas>(import.meta.glob('@assets/atlas/*.png', { eager: true })),
 		ui: await uiLoader.loadRecord<ui>(import.meta.glob('@assets/ui/*.png', { eager: true })),
 	}

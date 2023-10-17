@@ -1,7 +1,7 @@
 import { Group } from 'three'
 import { ecs } from './init'
-import { scene } from './rendering'
 
+const currentSceneQuery = ecs.with('scene', 'currentScene')
 export const addToScene = () => {
 	const sub = new Array<() => () => void>()
 	for (const component of ['sprite', 'camera', 'cssObject', 'sceneBackground'] as const) {
@@ -17,11 +17,13 @@ export const addToScene = () => {
 		}))
 		const withGroup = query.with('group')
 		sub.push(() => withGroup.onEntityAdded.subscribe((entity) => {
-			entity.group.add(entity[component])
-			if (entity.parent?.group) {
-				entity.parent.group.add(entity.group)
-			} else {
-				scene.add(entity.group)
+			for (const { scene } of currentSceneQuery) {
+				entity.group.add(entity[component])
+				if (entity.parent?.group) {
+					entity.parent.group.add(entity.group)
+				} else {
+					scene.add(entity.group)
+				}
 			}
 		}))
 		sub.push(() => withGroup.onEntityRemoved.subscribe((entity) => {

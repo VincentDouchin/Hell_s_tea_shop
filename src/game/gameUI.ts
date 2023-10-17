@@ -1,9 +1,6 @@
 import { UIElement, UiTag, UiTagQuery } from '@/UI/UiElement'
-import { Teas } from '@/constants/tea'
-import { assets, ecs } from '@/global/init'
+import { assets, ecs, kitchenState, servingState } from '@/global/init'
 import { Interactable } from '@/global/interactions'
-import { kitchenState, servingState } from '@/main'
-import { Order } from '@/serving/orders'
 import { sleep } from '@/utils/sleep'
 
 export const spawnKitchenUi = () => {
@@ -38,18 +35,21 @@ export const spawnServingUi = () => {
 }
 const ordersQuery = ecs.with('order')
 const orderContainerQuery = ecs.with('orderContainer')
-const addRandomOrder = () => {
-	const tea = Teas[Math.floor(Math.random() * Teas.length)]
-	ecs.add({
-		order: new Order(tea),
-	})
-}
-export const addOrders = () => ordersQuery.onEntityAdded.subscribe(({ order }) => {
+
+export const addOrders = () => ordersQuery.onEntityAdded.subscribe((customer) => {
 	for (const orderContainer of orderContainerQuery) {
 		ecs.add({
 			parent: orderContainer,
-			uiElement: new UIElement().text(order.tea.name),
+			uiElement: new UIElement().text(customer.order.tea),
+			uiLink: customer,
 		})
-		addRandomOrder()
+	}
+})
+const orderDisplayedQuery = ecs.with('uiLink')
+export const removeOrders = () => ordersQuery.onEntityRemoved.subscribe((customer) => {
+	for (const orderDisplayed of orderDisplayedQuery) {
+		if (orderDisplayed.uiLink === customer) {
+			ecs.remove(orderDisplayed)
+		}
 	}
 })

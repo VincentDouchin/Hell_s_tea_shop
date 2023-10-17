@@ -13,8 +13,11 @@ import type { Pickable, Slot } from '@/kitchen/pickup'
 import type { Liquid } from '@/kitchen/pour'
 import type { ColorShader } from '@/shaders/ColorShader'
 import type { OutlineShader } from '@/shaders/OutlineShader'
-import type { State } from '@/lib/state'
+import { State } from '@/lib/state'
 import type { Order } from '@/serving/orders'
+import type { Tea } from '@/constants/tea'
+import type { Spice } from '@/constants/spices'
+import type { Tooltip } from '@/UI/tooltip'
 
 export class Entity {
 	// ! Hierarchy
@@ -24,6 +27,7 @@ export class Entity {
 	// ! Scene
 	scene?: Scene
 	sceneBackground?: Background
+	currentScene?: boolean
 	// ! Sprites
 	sprite?: Sprite
 	animator?: Timer
@@ -50,11 +54,13 @@ export class Entity {
 	kettle?: boolean
 	cup?: { touchedByInfuser: number }
 	filled?: Liquid
+	tea?: Tea
+	spice?: Spice
 	teaBox?: boolean
 	teaBoxOpened?: boolean
 	infuser?: boolean
-	infuserFilled?: boolean
-	tea?: boolean
+	infuserFilled?: Tea
+	spiceShelf?: boolean
 	// ! Kettle
 	kettleButton?: boolean
 	kettleTableau?: boolean
@@ -66,12 +72,16 @@ export class Entity {
 	// ! UI
 	cssObject?: CSS2DObject
 	uiElement?: UIElement
-	tooltip?: boolean
+	tooltip?: Tooltip
 	uiTag?: UiTag
+	uiLink?: Entity
 	// ! Serving
 	servingCounter?: boolean
 	orderContainer?: boolean
 	order?: Order
+	customer?: boolean
+	tray?: boolean
+	bell?: boolean
 }
 type Prettify<T> = {
 	[K in keyof T]: T[K];
@@ -122,3 +132,6 @@ export const despawnOfType = (c: Component) => {
 		}
 	}
 }
+
+export const kitchenState = new State()
+export const servingState = new State()

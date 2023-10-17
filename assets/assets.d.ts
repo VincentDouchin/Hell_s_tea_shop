@@ -1,4 +1,5 @@
 type atlas = 'BlueButton' | 'RedButton'
-type sprites = 'Cafe' | 'close' | 'Cup' | 'CupEmpty' | 'CupWater' | 'InfuserBox' | 'InfuserFull' | 'InfuserOpened' | 'Kettle1' | 'kettleButton' | 'kettleTemperatureGauge' | 'Tableu' | 'TeaBox' | 'TeaBoxOver' | 'tray' | 'Wallpaper'
+type spices = 'ChilliPowder' | 'Marshmallow' | 'Nutmeg' | 'Sugar' | 'Thyme' | 'WhippedCreamBottle'
+type sprites = 'bell' | 'Cafe' | 'close' | 'Cup' | 'CupEmpty' | 'CupWater' | 'customer' | 'InfuserBox' | 'InfuserFull' | 'InfuserOpened' | 'Kettle1' | 'kettleButton' | 'kettleTemperatureGauge' | 'shelf' | 'Tableu' | 'TeaBox' | 'TeaBoxOver' | 'tray' | 'Wallpaper'
 type tea = 'CammomileTea' | 'DriedBitterMelon' | 'DriedBluePea' | 'EarlGray' | 'HibiscusTea' | 'Lavender' | 'Mint' | 'RoseTea' | 'StrawberryGreenTea'
 type ui = 'CupEmpty' | 'frameSimple' | 'InfuserCursor' | 'KettleCursor' | 'switchButton'

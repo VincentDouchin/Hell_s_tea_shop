@@ -1,6 +1,6 @@
 import type { OrthographicCamera } from 'three'
 import { Raycaster, Vector2, Vector3 } from 'three'
-import { renderer, scene } from './rendering'
+import { currentSceneQuery, renderer } from './rendering'
 import type { Entity } from '@/global/init'
 import { ecs } from '@/global/init'
 
@@ -134,21 +134,23 @@ export const detectInteractions = () => {
 	if (camera) {
 		// ! Update interactable position in world space
 		for (const { interactable, sprite, group } of worldInteractablesQuery) {
-			if (scene.getObjectById(group.id)) {
-				let pos = new Vector3()
-				pos = pos.setFromMatrixPosition(sprite.matrixWorld)
-				pos.project(camera)
-				const widthHalf = window.innerWidth / 2
-				const heightHalf = window.innerHeight / 2
+			for (const { scene } of currentSceneQuery) {
+				if (scene.getObjectById(group.id)) {
+					let pos = new Vector3()
+					pos = pos.setFromMatrixPosition(sprite.matrixWorld)
+					pos.project(camera)
+					const widthHalf = window.innerWidth / 2
+					const heightHalf = window.innerHeight / 2
 
-				interactable.position.x = (pos.x * widthHalf) + widthHalf
-				interactable.position.y = -(pos.y * heightHalf) + heightHalf
+					interactable.position.x = (pos.x * widthHalf) + widthHalf
+					interactable.position.y = -(pos.y * heightHalf) + heightHalf
 
-				interactable.dimensions.x = (interactable.x ?? sprite.scaledDimensions.x) * camera.zoom
-				interactable.dimensions.y = (interactable.x ?? interactable.y ?? sprite.scaledDimensions.y) * camera.zoom
-				interactable.enabled = true
-			} else {
-				interactable.enabled = false
+					interactable.dimensions.x = (interactable.x ?? sprite.scaledDimensions.x) * camera.zoom
+					interactable.dimensions.y = (interactable.x ?? interactable.y ?? sprite.scaledDimensions.y) * camera.zoom
+					interactable.enabled = true
+				} else {
+					interactable.enabled = false
+				}
 			}
 		}
 	}

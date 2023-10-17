@@ -5,6 +5,8 @@ import { CameraBounds } from '@/global/camera'
 import { assets, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
+import { UIElement } from '@/UI/UiElement'
+import { Tooltip } from '@/UI/tooltip'
 
 const counterQuery = ecs.with('counter')
 export const spawnCounter = () => {
@@ -13,6 +15,7 @@ export const spawnCounter = () => {
 			ecs.addComponent(entity, 'position', new Vector2())
 		}
 	} else {
+		// ! Counter
 		const counter = ecs.add({
 			counter: true,
 			sprite: new Sprite(assets.sprites.Cafe),
@@ -20,6 +23,7 @@ export const spawnCounter = () => {
 			cameraBounds: new CameraBounds(),
 			position: new Vector2(),
 		})
+		// ! Teabox
 		ecs.add({
 			sprite: new Sprite(assets.sprites.TeaBoxOver),
 			position: new Vector2(150, -95),
@@ -28,7 +32,8 @@ export const spawnCounter = () => {
 			showInteractable: true,
 			teaBox: true,
 		})
-		ecs.add({
+		// ! Cup
+		const cup = ecs.add({
 			sprite: new Sprite(assets.sprites.CupEmpty).setRenderOrder(2),
 			position: new Vector2(0, -95),
 			parent: counter,
@@ -37,12 +42,12 @@ export const spawnCounter = () => {
 			cup: { touchedByInfuser: 0 },
 			pickable: new Pickable(Slot.Cup, assets.ui.CupEmpty),
 		})
+		ecs.add({
+			...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),
+			tooltip: Tooltip.Tea,
+			parent: cup,
+		})
 
 		kettle(counter)
-	}
-}
-export const removeCounter = () => {
-	for (const entity of counterQuery) {
-		ecs.removeComponent(entity, 'position')
 	}
 }

@@ -99,6 +99,10 @@ export const addUiElements = () => uiElementQuery.onEntityAdded.subscribe((entit
 		cssRenderer.domElement.appendChild(entity.uiElement)
 	}
 })
+export const removeUiElements = () => uiElementQuery.onEntityRemoved.subscribe(({ uiElement }) => {
+	console.log(uiElement)
+	uiElement.remove()
+})
 export enum UiTag {
 	SwitchButton,
 }
