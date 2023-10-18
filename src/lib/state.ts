@@ -2,7 +2,13 @@ export class State {
 	static #states = new Set<State>()
 	static update() {
 		for (const state of this.#states) {
+			state.#preUpdate()
+		}
+		for (const state of this.#states) {
 			state.#update()
+		}
+		for (const state of this.#states) {
+			state.#postUpdate()
 		}
 	}
 
@@ -12,6 +18,8 @@ export class State {
 
 	#enterSystems = new Array<() => void>()
 	#updateSystems = new Array<() => void>()
+	#preUpdateSystems = new Array<() => void>()
+	#postUpdateSystems = new Array<() => void>()
 	#exitSystems = new Array<() => void>()
 	#subscribers = new Array<() => () => void>()
 	#unsubscribers = new Array<() => void>()
@@ -30,9 +38,31 @@ export class State {
 		return this
 	}
 
+	onPreUpdate(...systems: Array<() => void>) {
+		this.#preUpdateSystems.push(...systems)
+		return this
+	}
+
+	onPostUpdate(...systems: Array<() => void>) {
+		this.#postUpdateSystems.push(...systems)
+		return this
+	}
+
 	onExit(...systems: Array<() => void>) {
 		this.#exitSystems.push(...systems)
 		return this
+	}
+
+	#preUpdate() {
+		for (const system of this.#preUpdateSystems) {
+			system()
+		}
+	}
+
+	#postUpdate() {
+		for (const system of this.#postUpdateSystems) {
+			system()
+		}
 	}
 
 	#update() {

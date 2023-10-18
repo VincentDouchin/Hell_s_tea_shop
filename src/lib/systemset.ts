@@ -1,31 +1,18 @@
-interface systemSet {
-	(): void
-	conditions: (() => boolean)[]
-	timeout: number
-	runIf: (condition: () => boolean) => systemSet
-	throttle: (timeout: number) => systemSet
-}
-
-export function SystemSet(...systems: Array<() => void>): systemSet {
-	let time = Date.now()
-	const set: systemSet = function () {
-		if ((set.timeout > 0 && (time + set.timeout - Date.now()) < 0) || set.timeout === 0) {
-			if (set.conditions.every(condition => condition())) {
-				systems.forEach(system => system())
-				time = Date.now()
-			}
+export const runif = (...systems: Array<() => unknown>) => (condition: () => boolean) => () => {
+	if (condition()) {
+		for (const system of systems) {
+			system()
 		}
 	}
-	set.timeout = 0
-	set.conditions = []
-	set.runIf = (condition: () => boolean) => {
-		set.conditions.push(condition)
-		return set
+}
+export const throttle = (...systems: Array<() => unknown>) => (delay: number) => {
+	let time = Date.now()
+	return () => {
+		if (Date.now() - time >= delay) {
+			for (const system of systems) {
+				system()
+			}
+			time = Date.now()
+		}
 	}
-	set.throttle = (timeout: number) => {
-		set.timeout = timeout
-		return set
-	}
-
-	return set
 }

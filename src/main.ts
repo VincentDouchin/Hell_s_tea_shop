@@ -16,7 +16,7 @@ import { spawnSpiceShelf } from './kitchen/spices'
 import { openTeabox } from './kitchen/teaBox'
 import { initializeAtlas, updateSpriteFromAtlas } from './lib/atlas'
 import { State } from './lib/state'
-import { SystemSet } from './lib/systemset'
+import { runif } from './lib/systemset'
 import { time } from './lib/time'
 import { spawnServingCounter } from './serving/counter'
 import { customerLeave, hideCustomer, showCustomer, spawnOrder } from './serving/customer'
@@ -31,12 +31,12 @@ new State()
 	.onUpdate(render, adjustScreenSize(), updatePosition, detectInteractions, updateSpriteFromAtlas, showTooltip, setRenderOrder, showPickupItems, changeRenderOrder)
 	.onExit()
 	.enable()
-
 // ! Game State
 new State()
 	.addSubscribers(addOrders, removeOrders, customerLeave)
 	.onEnter(spawnKitchenUi, spawnServingUi, spawnOrder)
-	.onUpdate(changeState, releaseItems, SystemSet(pickupItems).runIf(() => !kettleGame.active))
+	.onUpdate(changeState, releaseItems)
+	.onPostUpdate(runif(pickupItems)(() => !kettleGame.active))
 	.enable()
 
 // ! Make Tea
