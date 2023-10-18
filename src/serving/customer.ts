@@ -4,15 +4,16 @@ import { Teas } from '@/constants/tea'
 import { assets, ecs } from '@/global/init'
 import { Sprite } from '@/lib/sprite'
 import { Tween } from '@/utils/tween'
+import { temperatures } from '@/constants/temperatures'
 
 export const spawnOrder = () => {
 	const tea = Teas[Math.floor(Math.random() * Teas.length)]
-
+	const temperature = temperatures[Math.floor(Math.random() * temperatures.length)]
 	ecs.add({
 		renderOrder: -1,
 		position: new Vector2(80, -50),
 		customer: true,
-		order: new Order(tea.name),
+		order: new Order(tea.name, temperature),
 	})
 }
 const orderQuery = ecs.with('order')

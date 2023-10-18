@@ -9,10 +9,11 @@ const kettleQuery = ecs.with('kettle', 'picked', 'sprite', 'group')
 const cupQuery = ecs.with('cup', 'position', 'sprite', 'interactable').without('filled')
 
 export const pourWater = () => {
-	if (kettleQuery.size) {
+	for (const { temperature } of kettleQuery) {
 		for (const cup of cupQuery) {
 			if (cup.interactable.justPressed) {
 				ecs.addComponent(cup, 'filled', Liquid.Water)
+				ecs.addComponent(cup, 'temperature', temperature)
 			}
 		}
 	}
