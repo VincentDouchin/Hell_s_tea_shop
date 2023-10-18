@@ -42,13 +42,14 @@ export const kettle = (parent: Entity) => {
 		kettleButton: true,
 	})
 }
+const temperatureQuery = ecs.with('temperature')
 const kettleQuery = ecs.with('kettle', 'temperature')
 const kettleButtonQuery = ecs.with('kettleButton', 'interactable')
 const kettleTableauQuery = ecs.with('kettleTableau', 'buttonsToClick')
 const buttonsToClickQuery = ecs.with('buttonToClick', 'sprite', 'atlas', 'interactable')
 
 export const reduceTemperature = () => {
-	for (const { temperature } of kettleQuery) {
+	for (const { temperature } of temperatureQuery) {
 		temperature.timer.tick(time.delta)
 		if (temperature.timer.justFinished) {
 			temperature.temperature = Math.max(temperature.temperature - 1, 0)
