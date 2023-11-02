@@ -12,7 +12,7 @@ import { spawnCounter as spawnKitchenCounter } from './kitchen/counter'
 import { clickOnKettleButton, kettleGame, reduceTemperature, setTemperature } from './kitchen/kettle'
 import { infuseTea, pickupItems, pickupTea, releaseItems, showPickupItems } from './kitchen/pickup'
 import { changeCupContent, pourWater } from './kitchen/pour'
-import { spawnSpiceShelf } from './kitchen/spices'
+import { addSpices, spawnSpiceShelf } from './kitchen/spices'
 import { openTeabox } from './kitchen/teaBox'
 import { initializeAtlas, updateSpriteFromAtlas } from './lib/atlas'
 import { State } from './lib/state'
@@ -43,7 +43,7 @@ new State()
 kitchenState
 	.addSubscribers()
 	.onEnter(setCurrentScene(kitchenScene), spawnBackground, spawnKitchenCounter, setCameraZoom(3), spawnSpiceShelf)
-	.onUpdate(clickOnKettleButton, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, reduceTemperature, moveCamera())
+	.onUpdate(clickOnKettleButton, pickupTea, pourWater, openTeabox, infuseTea, changeCupContent, setTemperature, reduceTemperature, moveCamera(), addSpices)
 	.onExit()
 	.enable()
 

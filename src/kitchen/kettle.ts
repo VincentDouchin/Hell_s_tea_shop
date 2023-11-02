@@ -9,10 +9,11 @@ import { State } from '@/lib/state'
 import { UIElement } from '@/UI/UiElement'
 import { Timer, time } from '@/lib/time'
 import { Tooltip } from '@/UI/tooltip'
+import { PixelTexture } from '@/lib/pixelTexture'
 
 export const kettle = (parent: Entity) => {
 	const kettle = ecs.add({
-		sprite: new Sprite(assets.sprites.Kettle1),
+		sprite: new Sprite(new PixelTexture(assets.sprites.Kettle1)),
 		position: new Vector2(-200, -70),
 		interactable: new Interactable(),
 		showInteractable: true,
@@ -23,7 +24,7 @@ export const kettle = (parent: Entity) => {
 	})
 	const gauge = ecs.add({
 		parent: kettle,
-		sprite: new Sprite(assets.sprites.kettleTemperatureGauge),
+		sprite: new Sprite(new PixelTexture(assets.sprites.kettleTemperatureGauge)),
 		position: new Vector2(-6, -22),
 		interactable: new Interactable(),
 		temperatureGauge: true,
@@ -35,7 +36,7 @@ export const kettle = (parent: Entity) => {
 	})
 	ecs.add({
 		parent: kettle,
-		sprite: new Sprite(assets.sprites.kettleButton),
+		sprite: new Sprite(new PixelTexture(assets.sprites.kettleButton)),
 		position: new Vector2(10.5, -21.5),
 		interactable: new Interactable(),
 		showInteractable: true,
@@ -61,7 +62,7 @@ const spawnKettleButtons = () => {
 	for (const kettleButton of kettleButtonQuery) {
 		if (!kettleTableauQuery.size) {
 			const tableau = ecs.add({
-				sprite: new Sprite(assets.sprites.Tableu),
+				sprite: new Sprite(new PixelTexture(assets.sprites.Tableu)),
 				position: new Vector2(50, 0),
 				parent: kettleButton,
 				kettleTableau: true,
@@ -70,7 +71,7 @@ const spawnKettleButtons = () => {
 			})
 			ecs.add({
 				parent: tableau,
-				sprite: new Sprite(assets.sprites.close),
+				sprite: new Sprite(new PixelTexture(assets.sprites.close)),
 				position: new Vector2(23, 38),
 				interactable: new Interactable(),
 				showInteractable: true,

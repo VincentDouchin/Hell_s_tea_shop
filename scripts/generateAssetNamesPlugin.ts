@@ -21,8 +21,8 @@ export const getAnimationName = (path: string) => {
 	return parts.join('-')
 }
 export default function watchAssets(): PluginOption {
-	const launchScript = async (filePath: string) => {
-		if (filePath.includes('assets\\') && filePath.split('.').at(-1) === 'png') {
+	const launchScript = async (filePath?: string) => {
+		if (!filePath || (filePath.includes('assets\\') && filePath.split('.').at(-1) === 'png')) {
 			const folders: Record<string, string[]> = {}
 			const assetsDir = await readdir('./assets', { recursive: true, withFileTypes: true })
 			for (const dir of assetsDir) {
@@ -45,6 +45,7 @@ export default function watchAssets(): PluginOption {
 			console.log('regenerated asset names')
 		}
 	}
+	launchScript()
 	return {
 		name: 'watch-assets',
 		apply: 'serve',

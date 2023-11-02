@@ -5,6 +5,7 @@ export enum Tooltip {
 	Temperature,
 	Tea,
 	Spice,
+	Cup,
 }
 
 const getTooltipText = (tooltip: Tooltip, parent: Entity) => {
@@ -12,6 +13,9 @@ const getTooltipText = (tooltip: Tooltip, parent: Entity) => {
 		case Tooltip.Temperature:return `${parent.parent?.temperature?.temperature}°`
 		case Tooltip.Tea:return parent.tea
 		case Tooltip.Spice:return parent.spice
+		case Tooltip.Cup:{
+			const temp = parent.temperature ? `${parent.temperature.temperature}°` : null
+			return [temp, ...(parent.spices ?? []), parent.tea].filter(Boolean).join(' - ') }
 	}
 }
 

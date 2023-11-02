@@ -47,7 +47,7 @@ export class Entity {
 	showInteractable?: boolean
 	pickable?: Pickable
 	picked?: boolean
-	slot?: Slot
+	slot?: Slot | Spice
 	defaultSlot?: boolean
 	// ! Kitchen
 	counter?: boolean
@@ -56,6 +56,7 @@ export class Entity {
 	filled?: Liquid
 	tea?: Tea
 	spice?: Spice
+	spices?: Array<Spice>
 	teaBox?: boolean
 	teaBoxOpened?: boolean
 	infuser?: boolean

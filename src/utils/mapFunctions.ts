@@ -50,3 +50,5 @@ export const range = <R >(start: number, end: number, fn: (i: number) => R) => {
 	}
 	return res
 }
+
+export const getRandom = <T>(arr: Array<T>) => arr[Math.floor(Math.random() * arr.length)]

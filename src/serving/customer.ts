@@ -5,21 +5,33 @@ import { assets, ecs } from '@/global/init'
 import { Sprite } from '@/lib/sprite'
 import { Tween } from '@/utils/tween'
 import { temperatures } from '@/constants/temperatures'
+import { PixelTexture } from '@/lib/pixelTexture'
+import { getRandom } from '@/utils/mapFunctions'
+import type { Spice } from '@/constants/spices'
+import { Spices } from '@/constants/spices'
 
 export const spawnOrder = () => {
-	const tea = Teas[Math.floor(Math.random() * Teas.length)]
-	const temperature = temperatures[Math.floor(Math.random() * temperatures.length)]
+	const tea = getRandom(Teas)
+	const temperature = getRandom(temperatures)
+	const spices: Spice[] = []
+	if (Math.random() < 0.3) {
+		spices.push(getRandom(Spices).name)
+	}
+	if (Math.random() < 0.3) {
+		spices.push(getRandom(Spices.filter(s => !spices.includes(s.name))).name)
+	}
+
 	ecs.add({
 		renderOrder: -1,
 		position: new Vector2(80, -50),
 		customer: true,
-		order: new Order(tea.name, temperature),
+		order: new Order(tea.name, temperature, spices),
 	})
 }
 const orderQuery = ecs.with('order')
 export const showCustomer = () => {
 	for (const entity of orderQuery) {
-		ecs.addComponent(entity, 'sprite', new Sprite(assets.sprites.customer))
+		ecs.addComponent(entity, 'sprite', new Sprite(new PixelTexture(assets.sprites.customer)))
 	}
 }
 export const hideCustomer = () => {

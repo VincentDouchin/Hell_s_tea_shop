@@ -40,7 +40,7 @@ export const addOrders = () => ordersQuery.onEntityAdded.subscribe((customer) =>
 	for (const orderContainer of orderContainerQuery) {
 		ecs.add({
 			parent: orderContainer,
-			uiElement: new UIElement().text(`${customer.order.tea} - ${customer.order.temperature.name}`),
+			uiElement: new UIElement().text([customer.order.tea, customer.order.temperature.name, ...(customer.order.spices ?? [])].join(' - ')),
 			uiLink: customer,
 		})
 	}

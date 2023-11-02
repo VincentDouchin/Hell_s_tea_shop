@@ -2,6 +2,7 @@ import { LinearSRGBColorSpace, Scene, Vector2, WebGLRenderer } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { assets, ecs } from './init'
 import { Background } from '@/lib/background'
+import { PixelTexture } from '@/lib/pixelTexture'
 
 export const renderer = new WebGLRenderer({ antialias: true, alpha: true })
 export const cssRenderer = new CSS2DRenderer()
@@ -19,7 +20,7 @@ export const setCurrentScene = (newCurrentScene: Scene) => () => {
 }
 export const spawnBackground = () => {
 	ecs.add({
-		sceneBackground: new Background(assets.sprites.Wallpaper),
+		sceneBackground: new Background(new PixelTexture(assets.sprites.Wallpaper)),
 		position: new Vector2(0, 0),
 	})
 }

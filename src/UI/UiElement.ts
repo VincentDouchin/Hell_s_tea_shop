@@ -100,7 +100,6 @@ export const addUiElements = () => uiElementQuery.onEntityAdded.subscribe((entit
 	}
 })
 export const removeUiElements = () => uiElementQuery.onEntityRemoved.subscribe(({ uiElement }) => {
-	console.log(uiElement)
 	uiElement.remove()
 })
 export enum UiTag {

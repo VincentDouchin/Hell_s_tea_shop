@@ -1,14 +1,14 @@
-import { AssetLoader, getFileName, loadImage } from '@/lib/assetloader'
+import { AssetLoader, addMargin, getFileName, loadImage } from '@/lib/assetloader'
 import { PixelTexture } from '@/lib/pixelTexture'
 import { getOffscreenBuffer, toCanvas } from '@/utils/buffer'
 import { asyncMapValues, mapKeys, mapValues } from '@/utils/mapFunctions'
 
 const spriteLoader = new AssetLoader()
 	.pipe(async (glob) => {
-		const images = await asyncMapValues(glob, async m => new PixelTexture(await loadImage(m.default)))
-		return mapKeys(images, getFileName)
+		const images = await asyncMapValues(glob, async m => await loadImage(m.default))
+		const withMargins = mapValues(images, addMargin(1))
+		return mapKeys(withMargins, getFileName)
 	})
-
 const atlasLoader = new AssetLoader()
 	.pipe(async (glob) => {
 		const images = await asyncMapValues(glob, m => loadImage(m.default))
@@ -23,7 +23,6 @@ const atlasLoader = new AssetLoader()
 		})
 		return mapKeys(atlas, getFileName)
 	})
-
 const uiLoader = new AssetLoader()
 	.pipe(async (glob) => {
 		const images = await asyncMapValues(glob, m => loadImage(m.default))

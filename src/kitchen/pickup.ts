@@ -1,9 +1,11 @@
 import type { With } from 'miniplex'
 import type { Vector2 } from 'three'
 import { Liquid } from './pour'
+import { type Spice, Spices } from '@/constants/spices'
 import type { Entity } from '@/global/init'
 import { assets, ecs, removeParent } from '@/global/init'
 import { Interactable } from '@/global/interactions'
+import { PixelTexture } from '@/lib/pixelTexture'
 import { Sprite } from '@/lib/sprite'
 import { ColorShader } from '@/shaders/ColorShader'
 import { OutlineShader } from '@/shaders/OutlineShader'
@@ -17,7 +19,7 @@ export enum Slot {
 
 export class Pickable {
 	enabled = false
-	constructor(public slot: Slot, public cursor: HTMLCanvasElement) {
+	constructor(public slot: Slot | Spice, public cursor: HTMLCanvasElement) {
 	}
 
 	enable() {
@@ -49,7 +51,7 @@ export const showPickupItems = () => {
 const pickableQuery = ecs.with('pickable', 'interactable', 'sprite', 'position')
 const pickedUpQuery = ecs.with('picked', 'pickable')
 
-export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot, defaultSlot = false): Entity => ({
+export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot | Spice, defaultSlot = false): Entity => ({
 	colorShader: new ColorShader([1, 1, 1, 0.5]),
 	interactable: new Interactable(),
 	showInteractable: true,
@@ -59,10 +61,14 @@ export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot, defaul
 	defaultSlot,
 
 })
-const slotSprites = {
+const slotSprites: Record<Slot, HTMLCanvasElement> = {
 	[Slot.Cup]: assets.sprites.CupEmpty,
 	[Slot.Infuser]: assets.sprites.InfuserBox,
 	[Slot.Kettle]: assets.sprites.Kettle1,
+}
+
+const getSlotSprite = (slot: Slot | Spice) => {
+	return Spices.find(spice => spice.name === slot)?.sprite ?? slotSprites[slot as Slot]
 }
 const slotsQuery = ecs.with('slot', 'interactable')
 const defaultSlotQuery = slotsQuery.with('defaultSlot')
@@ -80,7 +86,7 @@ export const pickupItems = () => {
 
 				pickable.enable()
 				ecs.add({
-					...slotEntity(new Sprite(slotSprites[pickable.slot]), position, pickable.slot, true),
+					...slotEntity(new Sprite(new PixelTexture(getSlotSprite(pickable.slot))), position, pickable.slot, true),
 					parent,
 				})
 				ecs.removeComponent(entity, 'position')

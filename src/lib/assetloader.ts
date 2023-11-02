@@ -1,3 +1,5 @@
+import { getScreenBuffer } from '@/utils/buffer'
+
 type pipeFn<T> = (glob: Record<string, T>) => Promise<Record<string, any>> | Record<string, any>
 
 export class AssetLoader< T = { default: string } > {
@@ -18,6 +20,11 @@ export const loadImage = (path: string): Promise<HTMLImageElement> => new Promis
 	img.src = path
 	img.onload = () => resolve(img)
 })
+export const addMargin = (margin: number) => (img: HTMLImageElement) => {
+	const buffer = getScreenBuffer(img.width + 2 * margin, img.height + 2 * margin)
+	buffer.drawImage(img, 0, 0, img.width, img.height, margin, margin, img.width, img.height)
+	return buffer.canvas
+}
 
 export const getFileName = (path: string) => {
 	return	path.split(/[./]/g).at(-2) ?? ''
