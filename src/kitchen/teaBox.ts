@@ -25,7 +25,7 @@ export const openTeabox = () => {
 				if (teaBoxOpenedQuery.size === 0) {
 					const box = ecs.add({
 						renderOrder: 3,
-						sprite: new Sprite(new PixelTexture(assets.sprites.TeaBox)).setScale(teaScale),
+						sprite: new Sprite(assets.sprites.TeaBox).setScale(teaScale),
 						position: cameraPosition,
 						interactable: new Interactable(),
 						teaBoxOpened: true,
@@ -35,7 +35,7 @@ export const openTeabox = () => {
 							const tea = Teas[x * 3 + y]
 							const teaEntity = ecs.add({
 								parent: box,
-								sprite: new Sprite(new PixelTexture(tea.image)).setScale(teaScale),
+								sprite: new Sprite(tea.image).setScale(teaScale),
 								interactable: new Interactable(),
 								showInteractable: true,
 								position: new Vector2(xPositions[x], yPositions[y]),
@@ -50,7 +50,7 @@ export const openTeabox = () => {
 					}
 					ecs.add({
 						parent: box,
-						sprite: new Sprite(new PixelTexture(assets.sprites.InfuserBox)).setRenderOrder(teaScale),
+						sprite: new Sprite(assets.sprites.InfuserBox).setRenderOrder(teaScale),
 						position: new Vector2(47.5, -16),
 						pickable: new Pickable(Slot.Infuser, assets.ui.InfuserCursor),
 						interactable: new Interactable(),
