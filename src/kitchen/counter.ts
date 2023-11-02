@@ -41,6 +41,7 @@ export const spawnCounter = () => {
 			showInteractable: true,
 			cup: { touchedByInfuser: 0 },
 			pickable: new Pickable(Slot.Cup, assets.ui.CupEmpty),
+			shakable: true,
 		})
 		ecs.add({
 			...new UIElement({ display: 'none' }).ninceSlice(assets.ui.frameSimple, 3).withWorldPosition(0, 10),

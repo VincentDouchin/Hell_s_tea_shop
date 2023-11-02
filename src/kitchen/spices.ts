@@ -29,6 +29,7 @@ export const spawnSpiceShelf = () => {
 				interactable: new Interactable(),
 				showInteractable: true,
 				spice: spice.name,
+				shakable: true,
 				pickable: new Pickable(spice.name, spice.sprite),
 			})
 			ecs.add({

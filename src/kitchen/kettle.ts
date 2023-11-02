@@ -19,6 +19,7 @@ export const kettle = (parent: Entity) => {
 		pickable: new Pickable(Slot.Kettle, assets.ui.KettleCursor),
 		kettle: true,
 		parent,
+		shakable: true,
 		temperature: { temperature: 0, timer: new Timer(5000) },
 	})
 	const gauge = ecs.add({

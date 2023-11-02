@@ -158,16 +158,25 @@ export const infuseTea = () => {
 	}
 }
 
+export const shakableQuery = ecs.with('shakable', 'interactable').without('shaking')
 export const shakeOnHover = () => {
-	for (const { interactable, position } of interactableQuery) {
-		if (interactable.justEntered) {
-			const initialPosition = position.x
-			new Tween(50).easing(easing.elastic)
-				.onUpdate(r => position.x = r, initialPosition, initialPosition + 1)
-				.onComplete(() => {
-					new Tween(50).easing(easing.elastic)
-						.onUpdate(r => position.x = r, initialPosition + 1, initialPosition)
-				})
+	for (const entity of shakableQuery) {
+		if (entity.interactable.justEntered) {
+			ecs.addComponent(entity, 'shaking', true)
 		}
 	}
 }
+
+export const shakeItems = () => ecs.with('shaking', 'position').onEntityAdded.subscribe((entity) => {
+	const { position } = entity
+	const initialPosition = position.x
+	new Tween(50).easing(easing.elastic)
+		.onUpdate(r => position.x = initialPosition + r, 0, 1)
+		.start().then(() => {
+			new Tween(50).easing(easing.elastic)
+				.onUpdate(r => position.x = initialPosition + r, 1, 0).onComplete(() => {
+					ecs.removeComponent(entity, 'shaking')
+					position.x = initialPosition
+				})
+		})
+})

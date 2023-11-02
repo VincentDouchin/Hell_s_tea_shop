@@ -1,13 +1,12 @@
 import { Vector2 } from 'three'
 import { Pickable, Slot } from './pickup'
+import { UIElement } from '@/UI/UiElement'
+import { Tooltip } from '@/UI/tooltip'
 import { Teas } from '@/constants/tea'
 import { cameraQuery } from '@/global/camera'
 import { assets, ecs } from '@/global/init'
 import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
-import { Tooltip } from '@/UI/tooltip'
-import { UIElement } from '@/UI/UiElement'
-import { PixelTexture } from '@/lib/pixelTexture'
 
 const teaBoxOpenedQuery = ecs.with('teaBoxOpened', 'interactable')
 const teaBoxVisibleQuery = teaBoxOpenedQuery.with('position')
@@ -56,6 +55,7 @@ export const openTeabox = () => {
 						interactable: new Interactable(),
 						showInteractable: true,
 						infuser: true,
+						shakable: true,
 					})
 				} else {
 					if (teaBoxVisibleQuery.size) {

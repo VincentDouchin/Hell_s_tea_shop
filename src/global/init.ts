@@ -49,6 +49,8 @@ export class Entity {
 	picked?: boolean
 	slot?: Slot | Spice
 	defaultSlot?: boolean
+	shakable?: true
+	shaking?: true
 	// ! Kitchen
 	counter?: boolean
 	kettle?: boolean
