@@ -57,8 +57,8 @@ servingState
 
 const animate = (now: number) => {
 	time.tick(now)
-	State.update()
 	Tween.update(time.delta)
+	State.update()
 	requestAnimationFrame(animate)
 }
 animate(Date.now())

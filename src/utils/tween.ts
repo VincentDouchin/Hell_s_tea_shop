@@ -45,7 +45,7 @@ export class Tween {
 		}
 		const ratio = this.#easingFunction(this.#time / this.duration)
 		for (const { from, to, fn } of this.#updateFunctions) {
-			fn(from + (to - from) * ratio)
+			fn(this.finished ? to : from + (to - from) * ratio)
 		}
 	}
 

@@ -172,11 +172,10 @@ export const shakeItems = () => ecs.with('shaking', 'position').onEntityAdded.su
 	const initialPosition = position.x
 	new Tween(50).easing(easing.elastic)
 		.onUpdate(r => position.x = initialPosition + r, 0, 1)
-		.start().then(() => {
+		.onComplete(() => {
 			new Tween(50).easing(easing.elastic)
 				.onUpdate(r => position.x = initialPosition + r, 1, 0).onComplete(() => {
 					ecs.removeComponent(entity, 'shaking')
-					position.x = initialPosition
 				})
 		})
 })
