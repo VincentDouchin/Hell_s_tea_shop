@@ -9,7 +9,7 @@ import { getRandom } from '@/utils/mapFunctions'
 import type { Spice } from '@/constants/spices'
 import { Spices } from '@/constants/spices'
 
-export const spawnOrder = () => {
+export const spawnOrder = (position = 50) => {
 	const tea = getRandom(Teas)
 	const temperature = getRandom(temperatures)
 	const spices: Spice[] = []
@@ -22,20 +22,15 @@ export const spawnOrder = () => {
 
 	ecs.add({
 		renderOrder: -1,
-		position: new Vector2(80, -50),
+		position: new Vector2(position, -50),
 		customer: true,
 		order: new Order(tea.name, temperature, spices),
 	})
 }
-const orderQuery = ecs.with('order')
+const orderQuery = ecs.with('order').without('sprite')
 export const showCustomer = () => {
 	for (const entity of orderQuery) {
 		ecs.addComponent(entity, 'sprite', new Sprite(assets.sprites.customer))
-	}
-}
-export const hideCustomer = () => {
-	for (const entity of orderQuery) {
-		ecs.removeComponent(entity, 'sprite')
 	}
 }
 
@@ -45,4 +40,14 @@ export const customerLeave = () => customerQuery.onEntityRemoved.subscribe((cust
 	new Tween(3000)
 		.onUpdate(x => customer.position.x = x, customer.position.x, -500)
 		.onUpdate(r => customer.group.rotation.z = Math.sin(r * 20) / 5)
+		.onComplete(() => {
+			spawnOrder(500)
+		})
+})
+export const customerEnter = () => customerQuery.onEntityAdded.subscribe((customer) => {
+	if (customer.position.x !== 50) {
+		new Tween(3000)
+			.onUpdate(x => customer.position.x = x, 500, 50)
+			.onUpdate(r => customer.group.rotation.z = Math.sin(r * 20) / 5, 1, 0)
+	}
 })

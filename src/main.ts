@@ -19,7 +19,7 @@ import { State } from './lib/state'
 import { runif } from './lib/systemset'
 import { time } from './lib/time'
 import { spawnServingCounter } from './serving/counter'
-import { customerLeave, hideCustomer, showCustomer, spawnOrder } from './serving/customer'
+import { customerEnter, customerLeave, showCustomer, spawnOrder } from './serving/customer'
 import { serveOrder } from './serving/orders'
 import { addedOutlineShader } from './shaders/OutlineShader'
 import { Tween } from './utils/tween'
@@ -33,7 +33,7 @@ new State()
 	.enable()
 // ! Game State
 new State()
-	.addSubscribers(addOrders, removeOrders, customerLeave, shakeItems)
+	.addSubscribers(addOrders, removeOrders, customerLeave, shakeItems, customerEnter)
 	.onEnter(spawnKitchenUi, spawnServingUi, spawnOrder)
 	.onUpdate(changeState, releaseItems, shakeOnHover)
 	.onPostUpdate(runif(pickupItems)(() => !kettleGame.active))
@@ -49,9 +49,10 @@ kitchenState
 
 // ! Serve Customers
 servingState
-	.onEnter(setCurrentScene(servingScene), spawnServingCounter, spawnBackground, showCustomer)
-	.onUpdate(serveOrder)
-	.onExit(hideCustomer)
+	.addSubscribers()
+	.onEnter(setCurrentScene(servingScene), spawnServingCounter, spawnBackground)
+	.onUpdate(serveOrder, showCustomer)
+	.onExit()
 	.onUpdate()
 
 const animate = (now: number) => {
