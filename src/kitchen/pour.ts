@@ -1,5 +1,4 @@
 import { assets, ecs } from '@/global/init'
-import { PixelTexture } from '@/lib/pixelTexture'
 
 export enum Liquid {
 	Water,
@@ -29,7 +28,7 @@ export const changeCupContent = () => {
 			[Liquid.Tea]: assets.sprites.Cup,
 		}[filled]
 		if (sprite.composer.initialTarget.texture.image !== texture) {
-			sprite.composer.setInitialTexture(new PixelTexture(texture))
+			sprite.composer.setInitialTexture(texture)
 		}
 	}
 }

@@ -5,7 +5,6 @@ import { assets, ecs } from '@/global/init'
 import { Sprite } from '@/lib/sprite'
 import { Tween } from '@/utils/tween'
 import { temperatures } from '@/constants/temperatures'
-import { PixelTexture } from '@/lib/pixelTexture'
 import { getRandom } from '@/utils/mapFunctions'
 import type { Spice } from '@/constants/spices'
 import { Spices } from '@/constants/spices'
@@ -31,7 +30,7 @@ export const spawnOrder = () => {
 const orderQuery = ecs.with('order')
 export const showCustomer = () => {
 	for (const entity of orderQuery) {
-		ecs.addComponent(entity, 'sprite', new Sprite(new PixelTexture(assets.sprites.customer)))
+		ecs.addComponent(entity, 'sprite', new Sprite(assets.sprites.customer))
 	}
 }
 export const hideCustomer = () => {

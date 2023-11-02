@@ -5,6 +5,12 @@ import { asyncMapValues, mapKeys, mapValues } from '@/utils/mapFunctions'
 
 const spriteLoader = new AssetLoader()
 	.pipe(async (glob) => {
+		const images = await asyncMapValues(glob, async m => new PixelTexture(await loadImage(m.default)))
+		return mapKeys(images, getFileName)
+	})
+
+const spiceLoader = new AssetLoader()
+	.pipe(async (glob) => {
 		const images = await asyncMapValues(glob, async m => await loadImage(m.default))
 		const withMargins = mapValues(images, addMargin(1))
 		return mapKeys(withMargins, getFileName)
@@ -33,7 +39,7 @@ export const loadAssets = async () => {
 	return {
 		sprites: await spriteLoader.loadRecord<sprites>(import.meta.glob('@assets/sprites/*.png', { eager: true })),
 		tea: await spriteLoader.loadRecord<tea>(import.meta.glob('@assets/tea/*.png', { eager: true })),
-		spices: await spriteLoader.loadRecord<spices>(import.meta.glob('@assets/spices/*.png', { eager: true })),
+		spices: await spiceLoader.loadRecord<spices>(import.meta.glob('@assets/spices/*.png', { eager: true })),
 		atlas: await atlasLoader.loadRecord<atlas>(import.meta.glob('@assets/atlas/*.png', { eager: true })),
 		ui: await uiLoader.loadRecord<ui>(import.meta.glob('@assets/ui/*.png', { eager: true })),
 	}

@@ -1,5 +1,6 @@
 import type { With } from 'miniplex'
-import type { Vector2 } from 'three'
+import type { Texture, Vector2 } from 'three'
+import { easing } from 'ts-easing'
 import { Liquid } from './pour'
 import { type Spice, Spices } from '@/constants/spices'
 import type { Entity } from '@/global/init'
@@ -10,6 +11,7 @@ import { Sprite } from '@/lib/sprite'
 import { ColorShader } from '@/shaders/ColorShader'
 import { OutlineShader } from '@/shaders/OutlineShader'
 import { sleep } from '@/utils/sleep'
+import { Tween } from '@/utils/tween'
 
 export enum Slot {
 	Cup,
@@ -35,7 +37,7 @@ export class Pickable {
 
 const infuserPickedUpQuery = ecs.with('infuser', 'picked')
 
-const interactableQuery = ecs.with('interactable', 'sprite', 'showInteractable')
+const interactableQuery = ecs.with('interactable', 'sprite', 'showInteractable', 'position')
 export const showPickupItems = () => {
 	for (const entity of interactableQuery) {
 		const { interactable, outlineShader } = entity
@@ -61,14 +63,15 @@ export const slotEntity = (sprite: Sprite, position: Vector2, slot: Slot | Spice
 	defaultSlot,
 
 })
-const slotSprites: Record<Slot, HTMLCanvasElement> = {
+const slotSprites: Record<Slot, Texture> = {
 	[Slot.Cup]: assets.sprites.CupEmpty,
 	[Slot.Infuser]: assets.sprites.InfuserBox,
 	[Slot.Kettle]: assets.sprites.Kettle1,
 }
 
 const getSlotSprite = (slot: Slot | Spice) => {
-	return Spices.find(spice => spice.name === slot)?.sprite ?? slotSprites[slot as Slot]
+	const spice = Spices.find(spice => spice.name === slot)?.sprite
+	return spice ? new PixelTexture(spice) : slotSprites[slot as Slot]
 }
 const slotsQuery = ecs.with('slot', 'interactable')
 const defaultSlotQuery = slotsQuery.with('defaultSlot')
@@ -86,7 +89,7 @@ export const pickupItems = () => {
 
 				pickable.enable()
 				ecs.add({
-					...slotEntity(new Sprite(new PixelTexture(getSlotSprite(pickable.slot))), position, pickable.slot, true),
+					...slotEntity(new Sprite(getSlotSprite(pickable.slot)), position, pickable.slot, true),
 					parent,
 				})
 				ecs.removeComponent(entity, 'position')
@@ -151,6 +154,20 @@ export const infuseTea = () => {
 					ecs.removeComponent(infuserEntity, 'infuserFilled')
 				}
 			}
+		}
+	}
+}
+
+export const shakeOnHover = () => {
+	for (const { interactable, position } of interactableQuery) {
+		if (interactable.justEntered) {
+			const initialPosition = position.x
+			new Tween(50).easing(easing.elastic)
+				.onUpdate(r => position.x = r, initialPosition, initialPosition + 1)
+				.onComplete(() => {
+					new Tween(50).easing(easing.elastic)
+						.onUpdate(r => position.x = r, initialPosition + 1, initialPosition)
+				})
 		}
 	}
 }

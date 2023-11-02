@@ -13,14 +13,14 @@ export const spawnSpiceShelf = () => {
 	if (spiceShelfQuery.size === 0) {
 		const shelf = ecs.add({
 			spiceShelf: true,
-			sprite: new Sprite(new PixelTexture(assets.sprites.shelf)),
+			sprite: new Sprite(assets.sprites.shelf),
 			position: new Vector2(0, -20),
 		})
 		const rows = [0, 0]
 		for (const spice of Spices) {
 			const row = spice.sprite.height === 32 ? 0 : 1
-			const y = (row * 32) + 16 - assets.sprites.shelf.height / 2 + spice.sprite.height / 2
-			const x = -assets.sprites.shelf.width / 2 + spice.sprite.width / 2 + rows[row]
+			const y = (row * 32) + 16 - assets.sprites.shelf.image.height / 2 + spice.sprite.height / 2
+			const x = -assets.sprites.shelf.image.width / 2 + spice.sprite.width / 2 + rows[row]
 			rows[row] += spice.sprite.width
 			const spriceEntity = ecs.add({
 				sprite: new Sprite(new PixelTexture(spice.sprite)),

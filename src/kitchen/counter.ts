@@ -7,7 +7,6 @@ import { Interactable } from '@/global/interactions'
 import { Sprite } from '@/lib/sprite'
 import { UIElement } from '@/UI/UiElement'
 import { Tooltip } from '@/UI/tooltip'
-import { PixelTexture } from '@/lib/pixelTexture'
 
 const counterQuery = ecs.with('counter')
 export const spawnCounter = () => {
@@ -19,14 +18,14 @@ export const spawnCounter = () => {
 		// ! Counter
 		const counter = ecs.add({
 			counter: true,
-			sprite: new Sprite(new PixelTexture(assets.sprites.Cafe)),
+			sprite: new Sprite(assets.sprites.Cafe),
 			anchor: { bottom: true },
 			cameraBounds: new CameraBounds(),
 			position: new Vector2(),
 		})
 		// ! Teabox
 		ecs.add({
-			sprite: new Sprite(new PixelTexture(assets.sprites.TeaBoxOver)),
+			sprite: new Sprite(assets.sprites.TeaBoxOver),
 			position: new Vector2(150, -95),
 			parent: counter,
 			interactable: new Interactable(),
@@ -35,7 +34,7 @@ export const spawnCounter = () => {
 		})
 		// ! Cup
 		const cup = ecs.add({
-			sprite: new Sprite(new PixelTexture(assets.sprites.CupEmpty)).setRenderOrder(2),
+			sprite: new Sprite(assets.sprites.CupEmpty).setRenderOrder(2),
 			position: new Vector2(0, -95),
 			parent: counter,
 			interactable: new Interactable(),

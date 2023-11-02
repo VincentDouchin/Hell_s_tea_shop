@@ -10,7 +10,7 @@ import { addShaders, addToScene, changeRenderOrder } from './global/registerComp
 import { initRendering, kitchenScene, render, servingScene, setCurrentScene, spawnBackground } from './global/rendering'
 import { spawnCounter as spawnKitchenCounter } from './kitchen/counter'
 import { clickOnKettleButton, kettleGame, reduceTemperature, setTemperature } from './kitchen/kettle'
-import { infuseTea, pickupItems, pickupTea, releaseItems, showPickupItems } from './kitchen/pickup'
+import { infuseTea, pickupItems, pickupTea, releaseItems, shakeOnHover, showPickupItems } from './kitchen/pickup'
 import { changeCupContent, pourWater } from './kitchen/pour'
 import { addSpices, spawnSpiceShelf } from './kitchen/spices'
 import { openTeabox } from './kitchen/teaBox'
@@ -35,7 +35,7 @@ new State()
 new State()
 	.addSubscribers(addOrders, removeOrders, customerLeave)
 	.onEnter(spawnKitchenUi, spawnServingUi, spawnOrder)
-	.onUpdate(changeState, releaseItems)
+	.onUpdate(changeState, releaseItems, shakeOnHover)
 	.onPostUpdate(runif(pickupItems)(() => !kettleGame.active))
 	.enable()
 

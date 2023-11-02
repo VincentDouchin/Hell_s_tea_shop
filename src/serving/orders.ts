@@ -3,7 +3,6 @@ import type { Tea } from '@/constants/tea'
 import type { Temperature } from '@/constants/temperatures'
 import { assets, ecs } from '@/global/init'
 import { Slot, slotEntity } from '@/kitchen/pickup'
-import { PixelTexture } from '@/lib/pixelTexture'
 import { Sprite } from '@/lib/sprite'
 
 export class Order {
@@ -22,7 +21,7 @@ export const serveOrder = () => {
 						if (customer.order.tea === tea && customer.order.temperature.check(cup.temperature?.temperature) && customer.order.spices?.every(s => cup.spices?.includes(s))) {
 							ecs.removeComponent(customer, 'order')
 							ecs.add({
-								...slotEntity(new Sprite(new PixelTexture(assets.sprites.CupEmpty)), position.clone(), Slot.Cup, false),
+								...slotEntity(new Sprite(assets.sprites.CupEmpty), position.clone(), Slot.Cup, false),
 								parent,
 								renderOrder: 1,
 							})

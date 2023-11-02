@@ -1,9 +1,8 @@
 import { Vector2 } from 'three'
 import { assets, ecs } from '@/global/init'
-import { Sprite } from '@/lib/sprite'
-import { Slot, slotEntity } from '@/kitchen/pickup'
 import { Interactable } from '@/global/interactions'
-import { PixelTexture } from '@/lib/pixelTexture'
+import { Slot, slotEntity } from '@/kitchen/pickup'
+import { Sprite } from '@/lib/sprite'
 
 const servingCounterQuery = ecs.with('servingCounter')
 export const spawnServingCounter = () => {
@@ -11,7 +10,7 @@ export const spawnServingCounter = () => {
 		// ! Counter
 		const counter = ecs.add({
 			renderOrder: 1,
-			sprite: new Sprite(new PixelTexture(assets.sprites.Cafe)),
+			sprite: new Sprite(assets.sprites.Cafe),
 			position: new Vector2(),
 			servingCounter: true,
 		})
@@ -19,7 +18,7 @@ export const spawnServingCounter = () => {
 		const tray = ecs.add({
 			parent: counter,
 			renderOrder: 1,
-			sprite: new Sprite(new PixelTexture(assets.sprites.tray)).setRenderOrder(0),
+			sprite: new Sprite(assets.sprites.tray).setRenderOrder(0),
 			position: new Vector2(-50, -90),
 			tray: true,
 		})
@@ -27,7 +26,7 @@ export const spawnServingCounter = () => {
 		ecs.add({
 			renderOrder: 1,
 			parent: counter,
-			sprite: new Sprite(new PixelTexture(assets.sprites.bell)),
+			sprite: new Sprite(assets.sprites.bell),
 			position: new Vector2(0, -80),
 			bell: true,
 			interactable: new Interactable(),
@@ -37,7 +36,7 @@ export const spawnServingCounter = () => {
 		ecs.add({
 			parent: tray,
 			renderOrder: 1,
-			...slotEntity(new Sprite(new PixelTexture(assets.sprites.CupEmpty)), new Vector2(), Slot.Cup, false),
+			...slotEntity(new Sprite(assets.sprites.CupEmpty), new Vector2(), Slot.Cup, false),
 		})
 	}
 }
